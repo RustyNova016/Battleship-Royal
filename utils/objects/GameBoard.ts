@@ -5,23 +5,25 @@ export interface BoardCell {
 }
 
 export class GameBoard {
-    cells: BoardCell[];
+    cells: BoardCell[][];
 
-    constructor(cells: BoardCell[]) {
+    constructor(cells: BoardCell[][]) {
         this.cells = cells
     }
 
-    public new(): GameBoard {
-        const cells: BoardCell[] = [];
+    public static new(): GameBoard {
+        const cells: BoardCell[][] = [];
 
         for (let y = 1; y < 11; y++) {
+            const row: BoardCell[] = []
             for (let x = 1; x < 11; x++) {
-                cells.push({
+                row.push({
                     x: x,
                     y: y,
                     isHit: false
                 })
             }
+            cells.push(row)
         }
 
         return new GameBoard(cells)

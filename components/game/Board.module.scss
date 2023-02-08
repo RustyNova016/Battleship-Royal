@@ -1,0 +1,16 @@
+.board {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    gap: 0;
+
+    width: fit-content;
+
+    border: 2px white solid;
+}
+
+.cell {
+    border: 1px white solid;
+    height: max-content;
+    aspect-ratio: 1;
+}
