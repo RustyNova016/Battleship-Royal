@@ -1,27 +1,19 @@
-export interface BoardCell {
-    x: number;
-    y: number;
-    isHit: boolean;
-}
+import {GameBoardCell} from "@/utils/objects/GameBoardCell";
 
 export class GameBoard {
-    cells: BoardCell[][];
+    cells: GameBoardCell[][];
 
-    constructor(cells: BoardCell[][]) {
+    constructor(cells: GameBoardCell[][]) {
         this.cells = cells
     }
 
     public static new(): GameBoard {
-        const cells: BoardCell[][] = [];
+        const cells: GameBoardCell[][] = [];
 
         for (let y = 1; y < 11; y++) {
-            const row: BoardCell[] = []
+            const row: GameBoardCell[] = []
             for (let x = 1; x < 11; x++) {
-                row.push({
-                    x: x,
-                    y: y,
-                    isHit: false
-                })
+                row.push(new GameBoardCell(x, y, false))
             }
             cells.push(row)
         }
