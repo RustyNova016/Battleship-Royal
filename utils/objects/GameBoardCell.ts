@@ -1,28 +1,46 @@
-export interface GameBoardCellI {
-    x: number;
-    y: number;
-    isHit: boolean;
-}
+import {Position} from "@/utils/objects/Position";
+import {ShipPart} from "@/utils/objects/ShipPart";
 
-export class GameBoardCell implements GameBoardCellI {
-    isHit: boolean;
-    x: number;
-    y: number;
+export class GameBoardCell {
+    position: Position;
+    shipPart: ShipPart | null
 
-    constructor(x: number, y: number, isHit: boolean) {
-        this.isHit = isHit;
-        this.x = x;
-        this.y = y;
+    constructor(position: Position) {
+        this._searched = false;
+        this.position = position;
+        this.shipPart = null
     }
 
-    public stringCoordinates(): string {
-        const mapper = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-        const letter = mapper[this.x - 1];
+    private _searched: boolean;
 
-        if (letter === undefined) {
-            throw new Error("X index out of range")
+    get searched(): boolean {
+        return this._searched;
+    }
+
+    get hasShip(): boolean {
+        return this.shipPart !== null;
+    }
+
+    public getColor() {
+        const hasShip = this.hasShip;
+
+        if (!hasShip) {
+            if (!this._searched) {
+                return "#00000000";
+            } else {
+                return "#2651c2";
+            }
         }
 
-        return letter + this.y;
+        if (!this._searched) {
+            return "#aaaaaa";
+        }
+        {
+            return "#dc3737";
+        }
+    }
+
+    public markAsSearched() {
+        this._searched = true
     }
 }
