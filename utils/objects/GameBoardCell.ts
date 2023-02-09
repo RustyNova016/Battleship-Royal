@@ -1,5 +1,6 @@
 import {Position} from "@/utils/objects/Position";
 import {ShipPart} from "@/utils/objects/ShipPart";
+import {BoardState} from "@/components/game/Board";
 
 export class GameBoardCell {
     position: Position;
@@ -12,6 +13,17 @@ export class GameBoardCell {
     }
 
     private _searched: boolean;
+
+    public isClickable(boardState: BoardState) {
+        switch (boardState) {
+            case "display":
+                return false
+            case "active":
+                return this._searched;
+            case "setup":
+                return !this.hasShip
+        }
+    }
 
     get searched(): boolean {
         return this._searched;

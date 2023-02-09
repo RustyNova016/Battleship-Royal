@@ -2,13 +2,20 @@
 
 import {GameBoard} from "@/utils/objects/GameBoard";
 import boardStyle from "./Board.module.scss"
-import {BoardCellClickable} from "@/components/game/BoardCellClickable";
 import {createContext, useEffect, useState} from "react";
+import {BoardCellWrapper} from "@/components/game/BoardCellWrapper";
 
 export const BoardContext = createContext(() => {
 })
 
-export function Board({board}: { board: GameBoard }) {
+export type BoardState = "setup" | "display" | "active";
+
+interface BoardProps {
+    board: GameBoard;
+    state: BoardState;
+}
+
+export function Board({board}: BoardProps) {
     const [hasChange, setHasChange] = useState(false);
 
     function refreshBoard() {
@@ -24,7 +31,7 @@ export function Board({board}: { board: GameBoard }) {
         <BoardContext.Provider value={refreshBoard}>
             {board.cells.map((row) => {
                 return row.map((cell, cellIndex) => {
-                    return <BoardCellClickable key={cellIndex} gameBoardCell={cell}/>
+                    return <BoardCellWrapper key={cellIndex} gameBoardCell={cell} state={"active"}/>
                 })
             })}
         </BoardContext.Provider>

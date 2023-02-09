@@ -12,6 +12,6 @@ export default function page() {
     ship.place(new Position(5, 5), "up", board)
 
     return <div style={{margin: "20px"}}>
-        <Board board={board}/>
+        <Board board={board} state={"active"}/>
     </div>
 }
