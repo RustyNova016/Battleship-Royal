@@ -29,11 +29,13 @@ export function Board({board}: BoardProps) {
 
     return <div className={boardStyle["board"]}>
         <BoardContext.Provider value={refreshBoard}>
-            {board.cells.map((row) => {
-                return row.map((cell, cellIndex) => {
-                    return <BoardCellWrapper key={cellIndex} gameBoardCell={cell} state={"active"}/>
+            {
+                board.cells.map((row) => {
+                    return row.map((cell, cellIndex) => {
+                        return <BoardCellWrapper key={cellIndex} gameBoardCell={cell} state={"active"}/>
+                    })
                 })
-            })}
+            }
         </BoardContext.Provider>
     </div>
 }
