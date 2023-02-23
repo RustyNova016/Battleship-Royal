@@ -1,6 +1,6 @@
 "use client"
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
-import boardCellStyle from "@/components/game/BoardCell.module.scss";
+import boardCellStyle from "@/components/game/board/cell/BoardCell.module.scss";
 
 export function BoardCellContent(props: { cell: GameBoardCell }) {
 

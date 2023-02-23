@@ -1,5 +1,6 @@
-import {Position} from "@/utils/objects/Position";
-import {direction} from "@/utils/objects/Ship";
+import {Position} from "@/utils/class/Position";
+import {direction} from "@/utils/validation/placedShipJSONZod";
+
 
 export class GridUtils {
     public static getOffsetPos(pos: Position, offsetDir: direction, cellNum: number): Position {

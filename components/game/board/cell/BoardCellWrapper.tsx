@@ -1,14 +1,14 @@
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
-import boardCellStyle from "@/components/game/BoardCell.module.scss";
-import {BoardState} from "@/components/game/Board";
-import {BoardCellClickArea} from "@/components/game/BoardCellClickArea";
+import boardCellStyle from "@/components/game/board/cell/BoardCell.module.scss";
+import {BoardState, UseGame} from "@/components/game/board/Board";
+import {BoardCellClickArea} from "@/components/game/board/cell/BoardCellClickArea";
 
 export interface BoardCellProps {
     gameBoardCell: GameBoardCell
     state: BoardState;
 }
 
-export function BoardCellWrapper(props: BoardCellProps) {
+export function BoardCellWrapper(props: BoardCellProps & UseGame) {
     const cellPos = props.gameBoardCell.position;
 
     const wrapperStyle = {
@@ -18,7 +18,7 @@ export function BoardCellWrapper(props: BoardCellProps) {
     };
 
     return <div className={boardCellStyle["cellWrapper"]} style={wrapperStyle}>
-        <BoardCellClickArea state={props.state} cell={props.gameBoardCell}/>
+        <BoardCellClickArea gameHandler={props.gameHandler} state={props.state} cell={props.gameBoardCell}/>
     </div>
 }
 

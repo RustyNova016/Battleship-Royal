@@ -1,36 +1,33 @@
 import {Position} from "@/utils/objects/Position";
-import {ShipPart} from "@/utils/objects/ShipPart";
-import {BoardState} from "@/components/game/Board";
+import {ShipPart} from "@/utils/objects/ship/ShipPart";
+import {GameBoard} from "@/utils/objects/GameBoard";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
 
 export class GameBoardCell {
-    position: Position;
-    shipPart: ShipPart | null
+    /** Board in which the cell reside */
+    gameBoard: GameBoard;
 
-    constructor(position: Position) {
+    /** Position on the board */
+    position: Position;
+
+    /** The part of a ship that the cell contain */
+    shipPart: ShipPart | undefined;
+
+    constructor(position: Position, gameBoard: GameBoard) {
         this._searched = false;
         this.position = position;
-        this.shipPart = null
+        this.shipPart = undefined;
+        this.gameBoard = gameBoard
     }
 
     private _searched: boolean;
-
-    public isClickable(boardState: BoardState) {
-        switch (boardState) {
-            case "display":
-                return false
-            case "active":
-                return this._searched;
-            case "setup":
-                return !this.hasShip
-        }
-    }
 
     get searched(): boolean {
         return this._searched;
     }
 
     get hasShip(): boolean {
-        return this.shipPart !== null;
+        return this.shipPart !== undefined;
     }
 
     public getColor() {
@@ -49,6 +46,18 @@ export class GameBoardCell {
         }
         {
             return "#dc3737";
+        }
+    }
+
+
+    public isClickable() {
+        switch (this.gameBoard.boardState) {
+            case "display":
+                return false
+            case "active":
+                return this._searched;
+            case "setup":
+                return !this.hasShip
         }
     }
 

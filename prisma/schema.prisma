@@ -17,34 +17,38 @@ model gamesession {
     isStarted          Boolean              @default(false)
     isEnded            Boolean              @default(false)
     gameTypeId         String
-    gametype           gametype             @relation(fields: [gameTypeId], references: [id])
+    gametype           GameTypeModel        @relation(fields: [gameTypeId], references: [id])
     gamesessionplayers gamesessionplayers[]
 }
 
 model gamesessionplayers {
     playerId     String
     sessionId    String
-    isDefeated   Boolean        @default(false)
-    gamesession  gamesession    @relation(fields: [sessionId], references: [id], onUpdate: Restrict)
-    player       Player         @relation(fields: [playerId], references: [id])
+    isDefeated   Boolean             @default(false)
+    gamesession  gamesession         @relation(fields: [sessionId], references: [id], onUpdate: Restrict)
+    player       Player              @relation(fields: [playerId], references: [id])
     playermove   playermove[]
-    shiplocation shiplocation[]
+    shiplocation ShipLocationModel[]
 
     @@id([playerId, sessionId])
 }
 
-model gametype {
+model GameTypeModel {
     id          String        @id @default(cuid())
     name        String
     maxPlayers  Int
     gamesession gamesession[]
+
+    @@map("GameType")
 }
 
-model ship {
-    id           String         @id @default(cuid())
+model ShipTypeModel {
+    id           String              @id @default(cuid())
     name         String
     length       Int
-    shiplocation shiplocation[]
+    shiplocation ShipLocationModel[]
+
+    @@map("ShipType")
 }
 
 model User {
@@ -58,16 +62,18 @@ model User {
     Player        Player[]
 }
 
-model shiplocation {
+model ShipLocationModel {
     shipId             String
     sessionID          String
     playerId           String
     x                  Int
     y                  Int
-    ship               ship               @relation(fields: [shipId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    direction          String
+    ship               ShipTypeModel      @relation(fields: [shipId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     gamesessionplayers gamesessionplayers @relation(fields: [sessionID, playerId], references: [sessionId, playerId], onDelete: NoAction, onUpdate: NoAction)
 
     @@id([shipId, sessionID, playerId])
+    @@map("ShipLocation")
 }
 
 model playermove {
