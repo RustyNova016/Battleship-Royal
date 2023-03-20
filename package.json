@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "prisma": "^4.10.1",
-    "sass": "^1.58.0",
+    "sass": "^1.59.3",
     "ts-node": "^10.9.1"
   }
 }
