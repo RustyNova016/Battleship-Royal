@@ -1,10 +1,8 @@
-"use client"
-import {GameBoardCell} from "@/utils/objects/GameBoardCell";
 import boardCellStyle from "@/components/game/board/cell/BoardCell.module.scss";
+import {useDisplayCellProps} from "@/components/game/board/cell/BoardCellClickArea";
 
-export function BoardCellContent(props: { cell: GameBoardCell }) {
-
+export function BoardCellContent(props: useDisplayCellProps) {
     return <div className={boardCellStyle["cellContent"]}>
-        {props.cell.position.stringCoordinates()}
+        {props.cell.pos.stringCoordinates()}
     </div>
 }

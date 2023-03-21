@@ -2,17 +2,17 @@ import {GridUtils} from "@/utils/class/GridUtils";
 import {Position} from "@/utils/class/Position";
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
 import {Fleet} from "@/utils/objects/ship/Fleet";
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {UserGameInfo} from "@/utils/types/UserGameInfo";
 
-
+/** Class that handles board logic */
 export class GameBoard {
     /** 2D array of the cells of the board */
     cells: GameBoardCell[][] = [];
-    /** Collection of ship that will and are used in the game */
+    /** Collection of ships that will and are used in the game */
     fleet: Fleet = new Fleet(this);
-    /** Is it considered as the enemies board */
+    /** Is it considered as the enemies board? */
     isEnemy: boolean = false;
     /** Can the board be interacted with? */
     isInteractive: boolean = false;

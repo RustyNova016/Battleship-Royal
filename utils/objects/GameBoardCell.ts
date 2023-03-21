@@ -1,7 +1,7 @@
 import {Position} from "@/utils/objects/Position";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {GameBoard} from "@/utils/objects/GameBoard";
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 
 export class GameBoardCell {
     /** Board in which the cell reside */

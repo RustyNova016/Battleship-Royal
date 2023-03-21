@@ -1,4 +1,4 @@
-import {ShipType} from "@/utils/objects/ship/ShipType";
+import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {SetUpBoard} from "@/app/game/[gametype]/setUp/setUpBoard";
 
 export const testShipTypes = [

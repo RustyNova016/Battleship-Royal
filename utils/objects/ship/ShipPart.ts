@@ -1,5 +1,5 @@
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 
 /** Part of the ship. AKA the portion of a ship at a given cell */
 export class ShipPart {

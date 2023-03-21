@@ -1,5 +1,5 @@
 import prisma from "@/lib/prismadb";
-import {ShipType} from "@/utils/objects/ship/ShipType";
+import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 
 export class ShipTypeORM {
     private static getPrisma() {

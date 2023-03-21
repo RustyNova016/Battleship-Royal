@@ -1,4 +1,4 @@
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipTypeModel} from ".prisma/client";
 
 export interface UserGameInfo {

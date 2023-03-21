@@ -1,6 +1,7 @@
 import {ShipTypeModel} from ".prisma/client";
+import {DataTableItemType} from "@/utils/class/ORM/ORM/DataTable";
 
-export class ShipType implements ShipTypeModel {
+export class ShipType implements ShipTypeModel, DataTableItemType {
     id: string;
     length: number;
     name: string;

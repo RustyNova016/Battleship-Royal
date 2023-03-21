@@ -1,18 +1,48 @@
 export class Position {
-    x: number;
-    y: number;
+    private x: number;
+    private y: number;
 
-    get yArray(){
-        return this.y - 1
+    constructor(xArray: number, yArray: number) {
+        this.x = xArray;
+        this.y = yArray;
     }
 
+    /** Board grid start at 1,1 for the player. This returns the position corrected to start in 0,0 for array calculations */
+    get yArray() {
+        return this.y
+    }
+
+    /** Board grid start at 1,1 for the player. This returns the position corrected to start in 0,0 for array calculations */
     get xArray() {
-        return this.x - 1
+        return this.x
     }
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
+    /** Board grid start at 1,1 for the player. This returns the position based on the player's perspective */
+    get xBoard() {
+        return this.x + 1
+    }
+
+    /** Board grid start at 1,1 for the player. This returns the position based on the player's perspective */
+    get yBoard() {
+        return this.y  + 1
+    }
+
+    public static letterToPos(letter: string): number {
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const index = alphabet.indexOf(letter.toUpperCase());
+
+        if (index === -1) {throw new Error("Error: Letter wasn't a valid alphabetical letter")}
+
+        return index
+    }
+
+    public static from(coordinates: string) {
+        const [letter, numString] = coordinates.split('') as [(string | undefined), (string)]
+        const num = parseInt(numString)
+
+        if (letter === undefined || num === undefined || isNaN(num)) {throw new Error("Invalid coordinate string")}
+
+        return new this(this.letterToPos(letter) -1, num -1)
     }
 
     public stringCoordinates(): string {

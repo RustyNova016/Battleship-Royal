@@ -1,0 +1,1 @@
+export const classicBoardLength = 10

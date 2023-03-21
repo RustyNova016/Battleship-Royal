@@ -2,7 +2,7 @@ import {z} from "zod";
 import {NextApiRequest, NextApiResponse} from "next";
 import {GameBoard} from "@/utils/objects/GameBoard";
 import {placedShipJSONZod} from "@/utils/validation/placedShipJSONZod";
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {Position} from "@/utils/objects/Position";
 import {ShipTypeORM} from "@/prisma/ORM/ShipTypeORM";
 import {ShipLocationORM} from "@/prisma/ORM/ShipLocationORM";

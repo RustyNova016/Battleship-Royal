@@ -31,6 +31,7 @@
   "devDependencies": {
     "prisma": "^4.11.0",
     "sass": "^1.59.3",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+            "@types/lodash": "^4.14.191"
   }
 }

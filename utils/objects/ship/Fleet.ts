@@ -1,8 +1,8 @@
 import {GridUtils} from "@/utils/class/GridUtils";
 import {Orientation} from "@/utils/class/Orientation";
 import {Position} from "@/utils/class/Position";
-import {PlacedShip} from "@/utils/objects/ship/PlacedShip";
-import {ShipType} from "@/utils/objects/ship/ShipType";
+import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
+import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {GameBoard} from "@/utils/objects/GameBoard";
 import {direction} from "@/utils/validation/placedShipJSONZod";
 

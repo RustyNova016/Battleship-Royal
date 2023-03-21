@@ -1,24 +1,28 @@
 "use client"
 import {BoardCellContent} from "@/components/game/board/cell/BoardCellContent";
-import {BoardContext, BoardState, UseGame} from "@/components/game/board/Board";
+import {BoardContext} from "@/components/game/board/Board";
 import {useContext} from "react";
-import {GameBoardCell} from "@/utils/objects/GameBoardCell";
+import {Position} from "@/utils/class/Position";
+import {CellDisplay} from "@/utils/objects/DisplayBoard/CellDisplay";
 
-export interface BoardCellClickAreaProps {
-    cell: GameBoardCell
-    state: BoardState
+export interface useCellClickHandler {
+    cellClickHandler: (cellPos: Position) => void
 }
 
-export function BoardCellClickArea(props: BoardCellClickAreaProps & UseGame) {
+export interface useDisplayCellProps {
+    cell: CellDisplay
+}
+
+export function BoardCellClickArea(props: useCellClickHandler & useDisplayCellProps) {
     const refreshBoard = useContext(BoardContext);
 
     const onClick = () => {
-        console.log("Click on", props.cell.position.stringCoordinates())
-        props.gameHandler.handleClick(props.cell)
+        console.log("Click on", props.cell.pos.stringCoordinates())
+        props.cellClickHandler(props.cell.pos)
         refreshBoard()
     };
 
-    return <button onClick={onClick} disabled={props.cell.isClickable()}>
+    return <button onClick={onClick} disabled={props.cell.isClickable}>
         <BoardCellContent cell={props.cell}/>
     </button>
 }

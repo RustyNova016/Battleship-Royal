@@ -3,10 +3,11 @@ import {Orientation} from "@/utils/class/Orientation";
 import {Position} from "@/utils/class/Position";
 import {Direction, Fleet} from "@/utils/objects/ship/Fleet";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
-import {ShipType} from "@/utils/objects/ship/ShipType";
+import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
+import {DataTableItemType} from "@/utils/class/ORM/ORM/DataTable";
 
 
-export class PlacedShip {
+export class PlacedShip implements DataTableItemType {
     public anchorPosition: Position;
     public facing: Direction;
     fleet: Fleet;
