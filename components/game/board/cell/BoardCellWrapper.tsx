@@ -9,8 +9,8 @@ export function BoardCellWrapper(props: useDisplayCellProps & useCellClickHandle
     const cellPos = props.cell.pos;
 
     const wrapperStyle = {
-        gridColumn: cellPos.xArray + " / " + cellPos.xArray,
-        gridRow: cellPos.yArray + " / " + cellPos.yArray,
+        gridColumn: cellPos.xBoard + " / " + cellPos.xBoard,
+        gridRow: cellPos.yBoard + " / " + cellPos.yBoard,
         backgroundColor: props.cell.getColor()
     };
 

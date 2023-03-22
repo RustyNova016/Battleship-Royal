@@ -1,6 +1,7 @@
 import {DataTable} from "@/utils/class/ORM/ORM/DataTable";
 import {CellDisplay} from "@/utils/objects/DisplayBoard/CellDisplay";
 import {classicBoardLength} from "../../../data/Boards";
+import {GameBoardState} from "@/utils/class/game/GameManagers/GameBoardManager";
 
 /** Board component data, only handles display logic */
 export class BoardDisplay extends DataTable<CellDisplay> {
@@ -23,7 +24,7 @@ export class BoardDisplay extends DataTable<CellDisplay> {
         const rows = []
 
         for (let i = 0; i < classicBoardLength; i++) {
-            rows.push(this.getRow(1))
+            rows.push(this.getRow(i))
         }
 
         return rows
@@ -35,6 +36,13 @@ export class BoardDisplay extends DataTable<CellDisplay> {
             .toValueArray()
             .filter(cell => cell.pos.yArray === rowNum)
             .sort((pos1, pos2) => pos1.pos.xArray - pos2.pos.xArray)
+    }
+
+    /** Update from a board state */
+    updateFromState(state: GameBoardState) {
+        state.board.forEach(cellState => {
+            this.getOrCreate(cellState.pos).updateFromState(cellState)
+        })
     }
 }
 

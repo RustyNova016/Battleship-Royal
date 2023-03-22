@@ -1,26 +1,23 @@
 import {GridUtils} from "@/utils/class/GridUtils";
 import {Orientation} from "@/utils/class/Orientation";
 import {Position} from "@/utils/class/Position";
-import {Direction, Fleet} from "@/utils/objects/ship/Fleet";
+import {Direction} from "@/utils/objects/ship/Fleet";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {DataTableItemType} from "@/utils/class/ORM/ORM/DataTable";
+import {ShipPlacement} from "@/utils/class/game/GameManagers/GameBoardManager";
 
 
-export class PlacedShip implements DataTableItemType {
+export class PlacedShip {
     public anchorPosition: Position;
     public facing: Direction;
-    fleet: Fleet;
-    parts: ShipPart[];
-    shipType: ShipType;
+    public parts: ShipPart[];
+    public shipType: ShipType;
 
-    constructor(shipType: ShipType, anchorPosition: Position, facing: Direction, fleet: Fleet) {
+    constructor(shipType: ShipType, anchorPosition: Position, facing: Direction) {
         this.facing = facing;
         this.anchorPosition = anchorPosition;
         this.shipType = shipType;
         this.parts = [];
-        this.fleet = fleet;
-        this.fleet.ships.push(this);
     }
 
     get isDestroyed(): boolean {
@@ -29,11 +26,22 @@ export class PlacedShip implements DataTableItemType {
                 return false;
             }
         }
+
         return true;
     }
 
     get isPlaced(): boolean {
         return this.parts.length !== 0;
+    }
+
+    public getPartsPositions() {
+        const positions = [];
+
+        for (let i = 0; i < this.shipType.length; i++) {
+            positions.push(GridUtils.getOffsetPos(this.anchorPosition, Orientation.getShipTailDirection(this.facing), i))
+        }
+
+        return positions
     }
 
     public createParts() {
@@ -42,6 +50,14 @@ export class PlacedShip implements DataTableItemType {
             const partPos = GridUtils.getOffsetPos(this.anchorPosition, Orientation.getShipTailDirection(this.facing), i);
 
             new ShipPart(this, this.fleet.board.getCellAt(partPos), []);
+        }
+    }
+
+    public exportState(): ShipPlacement {
+        return {
+            pos: this.anchorPosition.getStringCoordinates(),
+            direction: this.facing,
+            shipType: this.shipType.id
         }
     }
 }

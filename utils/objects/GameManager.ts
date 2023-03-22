@@ -3,20 +3,8 @@ import {GameBoardCell} from "@/utils/objects/GameBoardCell";
 import {Direction, Fleet} from "@/utils/objects/ship/Fleet";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {BoardDisplay} from "@/utils/objects/DisplayBoard/BoardDisplay";
-import {Position} from "@/utils/class/Position";
 
 export type GameState = "setUp"
-
-/** This class manages everything related to one board */
-export class GameBoardManager {
-    /** Game board and all the cells */
-    public board: GameBoard = new GameBoard();
-
-    /** The ships placed on the board */
-    public fleet: Fleet = new Fleet();
-
-
-}
 
 
 
@@ -32,7 +20,7 @@ export class GameManager {
 
     get state() {
         if (!this.userBoard.isBoardReady) {
-            return "setUp"
+            return "setup"
         }
     }
 
@@ -43,7 +31,7 @@ export class GameManager {
 
     public handleClick(atCell: GameBoardCell) {
         switch (this.state) {
-            case "setUp":
+            case "setup":
                 this.userBoard.fleet.placeNextType(atCell.position, this.shipPlacementDirection);
                 if(this.userBoard.isBoardReady) {}
         }
@@ -61,16 +49,3 @@ export class EnemyData {
     public playerId: string
 }
 
-export class gameSetup {
-    public shipsToPlace;
-    public board = new GameBoard();
-
-    constructor(shipsToPlace: ShipType[]) {
-        this.shipsToPlace = shipsToPlace;
-    }
-
-    /** Place the ship on the board. Return true if it worked, false if not */
-    handlePlacement(pos: Position): boolean {
-        this.board
-    }
-}

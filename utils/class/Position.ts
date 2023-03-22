@@ -24,10 +24,10 @@ export class Position {
 
     /** Board grid start at 1,1 for the player. This returns the position based on the player's perspective */
     get yBoard() {
-        return this.y  + 1
+        return this.y + 1
     }
 
-    public static letterToPos(letter: string): number {
+    public static letterToArrayPos(letter: string): number {
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const index = alphabet.indexOf(letter.toUpperCase());
 
@@ -36,23 +36,28 @@ export class Position {
         return index
     }
 
+    public static ArrayPosToLetter(index: number) {
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const letter = alphabet.at(index)
+
+        if(letter === undefined) {
+            throw new Error("Error: The index is out of range")
+        }
+
+        return letter
+    }
+
     public static from(coordinates: string) {
-        const [letter, numString] = coordinates.split('') as [(string | undefined), (string)]
+        const letter = coordinates.at(0)
+        const numString = coordinates.slice(1);
         const num = parseInt(numString)
 
         if (letter === undefined || num === undefined || isNaN(num)) {throw new Error("Invalid coordinate string")}
 
-        return new this(this.letterToPos(letter) -1, num -1)
+        return new this(this.letterToArrayPos(letter), num - 1)
     }
 
-    public stringCoordinates(): string {
-        const mapper = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-        const letter = mapper[this.xArray];
-
-        if (letter === undefined) {
-            throw new Error("X index out of range")
-        }
-
-        return letter + this.y;
+    public getStringCoordinates(): string {
+        return Position.ArrayPosToLetter(this.xArray) + this.yBoard
     }
 }

@@ -1,4 +1,5 @@
 import {Position} from "@/utils/class/Position";
+import {CellState} from "@/utils/class/game/GameManagers/GameBoardManager";
 
 /** Cell in the Board component. This only handles display logic. */
 export class CellDisplay {
@@ -12,7 +13,7 @@ export class CellDisplay {
         this.pos = Position.from(pos)
     }
 
-    get id() {return this.pos.stringCoordinates()}
+    get id() {return this.pos.getStringCoordinates()}
 
     public getColor() {
         if (this.isHit) {return "#dc3737"}
@@ -20,5 +21,11 @@ export class CellDisplay {
         if (this.hasShip) {return "#aaaaaa"}
 
         return "#00000000"
+    }
+
+    public updateFromState(cellState: CellState) {
+        this.hasShip = cellState.hasShip;
+        this.isHit = cellState.isHit;
+        this.isChecked = cellState.isChecked;
     }
 }

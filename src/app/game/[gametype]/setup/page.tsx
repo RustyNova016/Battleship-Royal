@@ -1,5 +1,5 @@
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {SetUpBoard} from "@/app/game/[gametype]/setUp/setUpBoard";
+import {SetUpBoard} from "@/app/game/[gametype]/setup/setUpBoard";
 
 export const testShipTypes = [
     new ShipType("1", "Destroyer", 2),
@@ -8,7 +8,6 @@ export const testShipTypes = [
 ]
 
 export default async function () {
-
     return <SetUpBoard/>
 }
 

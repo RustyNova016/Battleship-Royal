@@ -1,25 +1,27 @@
+import {CellState, GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
 import {GridUtils} from "@/utils/class/GridUtils";
 import {Position} from "@/utils/class/Position";
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
-import {Fleet} from "@/utils/objects/ship/Fleet";
+import {Direction} from "@/utils/objects/ship/Fleet";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
+import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {UserGameInfo} from "@/utils/types/UserGameInfo";
 
 /** Class that handles board logic */
 export class GameBoard {
+    /** Board Manager */
+    gameBoardManager: GameBoardManager;
     /** 2D array of the cells of the board */
     cells: GameBoardCell[][] = [];
-    /** Collection of ships that will and are used in the game */
-    fleet: Fleet = new Fleet(this);
     /** Is it considered as the enemies board? */
     isEnemy: boolean = false;
     /** Can the board be interacted with? */
     isInteractive: boolean = false;
 
-    constructor(ships: PlacedShip[] | undefined = undefined) {
+    constructor(gameBoardManager: GameBoardManager) {
+        this.gameBoardManager = gameBoardManager
         this.generateCells();
-        ships !== undefined ? this.placeShips(ships) : undefined;
     }
 
     get isBoardReady(): boolean {
@@ -32,14 +34,11 @@ export class GameBoard {
         return gameBoard;
     }
 
-    public canPlaceShip(ship: PlacedShip) {
-        if (ship.anchorPosition === undefined || ship.facing) {
-            return false;
-        }
-
-        for (let i = 0; i < ship.shipType.length; i++) {
+    /** Check if the ship can be placed at a position */
+    public canPlaceShip(shipType: ShipType, pos: Position, direction: Direction) {
+        for (let i = 0; i < shipType.length; i++) {
             // Calculate the position of the ship part
-            const partPos = GridUtils.getOffsetPos(ship.anchorPosition, ship.facing, i);
+            const partPos = GridUtils.getOffsetPos(pos, direction, i);
 
             if (this.getCellAt(partPos).shipPart !== null) {
                 return false;
@@ -52,10 +51,10 @@ export class GameBoard {
     public generateCells() {
         const cells: GameBoardCell[][] = [];
 
-        for (let y = 1; y < 11; y++) {
+        for (let y = 0; y < 10; y++) {
             const row: GameBoardCell[] = [];
-            for (let x = 1; x < 11; x++) {
-                row.push(new GameBoardCell(new Position(x, y), this));
+            for (let x = 0; x < 10; x++) {
+                row.push(new GameBoardCell(new Position(x, y), this, this.gameBoardManager));
             }
             cells.push(row);
         }
@@ -77,14 +76,7 @@ export class GameBoard {
     }
 
     public placeShip(ship: PlacedShip) {
-        if (!this.canPlaceShip(ship)) {
-            throw new Error("Cannot place a ship");
-        }
-
-        // Ship position is already checked in the placement check function. This is just a typescript check
-        if (ship.anchorPosition === undefined || ship.facing) {
-            return;
-        }
+        if (ship.anchorPosition === undefined) {return;}
 
         for (let i = 0; i < ship.shipType.length; i++) {
             // Calculate the position of the ship part
@@ -102,4 +94,10 @@ export class GameBoard {
             this.placeShip(ship);
         }
     }
+
+    /** Export the state of this board for the client rendering */
+     public exportState(): CellState[] {
+        const gameBoardCells = this.cells.flat();
+        return gameBoardCells.map(cell => cell.exportState())
+     }
 }

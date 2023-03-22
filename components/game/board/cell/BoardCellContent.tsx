@@ -3,6 +3,6 @@ import {useDisplayCellProps} from "@/components/game/board/cell/BoardCellClickAr
 
 export function BoardCellContent(props: useDisplayCellProps) {
     return <div className={boardCellStyle["cellContent"]}>
-        {props.cell.pos.stringCoordinates()}
+        {props.cell.pos.getStringCoordinates()}
     </div>
 }

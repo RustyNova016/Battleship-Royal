@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import boardStyle from "./Board.module.scss"
-import {createContext, useEffect, useState} from "react";
+import {useCellClickHandler} from "@/components/game/board/cell/BoardCellClickArea";
 import {BoardCellWrapper} from "@/components/game/board/cell/BoardCellWrapper";
 import {GameManager} from "@/utils/objects/GameManager";
+import {createContext} from "react";
+import boardStyle from "./Board.module.scss";
 import {BoardDisplay} from "@/utils/objects/DisplayBoard/BoardDisplay";
-import {useCellClickHandler} from "@/components/game/board/cell/BoardCellClickArea";
 
 export const BoardContext = createContext(() => {
 })
@@ -21,26 +21,12 @@ export interface UseGame {
 }
 
 export function Board(props: BoardProps & useCellClickHandler) {
-    const [hasChange, setHasChange] = useState(false);
-
-    function refreshBoard() {
-        setHasChange(true)
-    }
-
-    useEffect(() => {
-        setHasChange(false)
-    }, [hasChange]);
-
-
+    const cells = props.board.toValueArray()
     return <div className={boardStyle["board"]}>
-        <BoardContext.Provider value={refreshBoard}>
             {
-                props.board.to2DArray().map((row) => {
-                    return row.map((cell, cellIndex) => {
-                        return <BoardCellWrapper cell={cell} cellClickHandler={props.cellClickHandler} key={cellIndex}/>
-                    })
+                cells.map((cell, cellIndex) => {
+                    return <BoardCellWrapper cell={cell} cellClickHandler={props.cellClickHandler} key={cellIndex}/>
                 })
             }
-        </BoardContext.Provider>
     </div>
 }
