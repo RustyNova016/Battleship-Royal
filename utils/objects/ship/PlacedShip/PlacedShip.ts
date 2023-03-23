@@ -4,7 +4,8 @@ import {Position} from "@/utils/class/Position";
 import {Direction} from "@/utils/objects/ship/Fleet";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {ShipPlacement} from "@/utils/class/game/GameManagers/GameBoardManager";
+
+import {ShipPlacement} from "@/utils/class/game/ShipManagers/ShipPlacement";
 
 
 export class PlacedShip {
@@ -38,10 +39,10 @@ export class PlacedShip {
         const positions = [];
 
         for (let i = 0; i < this.shipType.length; i++) {
-            positions.push(GridUtils.getOffsetPos(this.anchorPosition, Orientation.getShipTailDirection(this.facing), i))
+            positions.push(GridUtils.getOffsetPos(this.anchorPosition, Orientation.getShipTailDirection(this.facing), i));
         }
 
-        return positions
+        return positions;
     }
 
     public createParts() {
@@ -58,7 +59,7 @@ export class PlacedShip {
             pos: this.anchorPosition.getStringCoordinates(),
             direction: this.facing,
             shipType: this.shipType.id
-        }
+        };
     }
 }
 

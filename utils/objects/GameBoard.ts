@@ -1,4 +1,4 @@
-import {CellState, GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
+import {GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
 import {GridUtils} from "@/utils/class/GridUtils";
 import {Position} from "@/utils/class/Position";
 import {GameBoardCell} from "@/utils/objects/GameBoardCell";
@@ -7,6 +7,7 @@ import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {UserGameInfo} from "@/utils/types/UserGameInfo";
+import {CellState} from "@/utils/class/game/BoardManagers/CellState";
 
 /** Class that handles board logic */
 export class GameBoard {
@@ -15,12 +16,12 @@ export class GameBoard {
     /** 2D array of the cells of the board */
     cells: GameBoardCell[][] = [];
     /** Is it considered as the enemies board? */
-    isEnemy: boolean = false;
+    isEnemy = false;
     /** Can the board be interacted with? */
-    isInteractive: boolean = false;
+    isInteractive = false;
 
     constructor(gameBoardManager: GameBoardManager) {
-        this.gameBoardManager = gameBoardManager
+        this.gameBoardManager = gameBoardManager;
         this.generateCells();
     }
 
@@ -63,12 +64,12 @@ export class GameBoard {
     }
 
     public getCellAt(pos: Position): GameBoardCell {
-        let row = this.cells[pos.yArray];
+        const row = this.cells[pos.yArray];
         if (row === undefined) {
             throw new Error("Y index out of range");
         }
 
-        let cell = row[pos.xArray];
+        const cell = row[pos.xArray];
         if (cell === undefined) {
             throw new Error("X index out of range");
         }
@@ -96,8 +97,8 @@ export class GameBoard {
     }
 
     /** Export the state of this board for the client rendering */
-     public exportState(): CellState[] {
+    public exportState(): CellState[] {
         const gameBoardCells = this.cells.flat();
-        return gameBoardCells.map(cell => cell.exportState())
-     }
+        return gameBoardCells.map(cell => cell.exportState());
+    }
 }

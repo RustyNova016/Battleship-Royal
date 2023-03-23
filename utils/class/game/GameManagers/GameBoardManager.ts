@@ -3,14 +3,15 @@ import {GameBoard} from "@/utils/objects/GameBoard";
 import {Direction, Fleet} from "@/utils/objects/ship/Fleet";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
+import {GameBoardState} from "@/utils/class/game/GameManagers/GameBoardState";
 
 /** This class manages everything related to one board */
 export class GameBoardManager {
     /** Game board and all the cells */
-    public board: GameBoard
+    public board: GameBoard;
 
     /** The ships placed on the board */
-    public fleet: Fleet
+    public fleet: Fleet;
 
     constructor() {
         this.board = new GameBoard(this);
@@ -19,41 +20,20 @@ export class GameBoardManager {
 
     public placeShip(shipType: ShipType, pos: Position, direction: Direction) {
         // Check if the placement is possible
-        if (!this.fleet.canPlaceShip(shipType, pos, direction)) {return false}
+        if (!this.fleet.canPlaceShip(shipType, pos, direction)) {return false;}
 
         // Place the ship
-        const ship = new PlacedShip(shipType, pos, direction)
-        this.fleet.insertShip(ship)
+        const ship = new PlacedShip(shipType, pos, direction);
+        this.fleet.insertShip(ship);
 
-        return true
+        return true;
     }
 
     /** Export the state of this board for the client rendering */
-    public exportState(): GameBoardState{
+    public exportState(): GameBoardState {
         return {
             board: this.board.exportState(),
             ships: this.fleet.exportState()
-        }
+        };
     }
-}
-
-/** State of the whole board */
-export interface GameBoardState {
-    ships: ShipPlacement[]
-    board: CellState[]
-}
-
-/** State of cells */
-export interface CellState {
-    pos: string;
-    isChecked: boolean;
-    isHit: boolean;
-    hasShip: boolean
-}
-
-/** State of ships */
-export interface ShipPlacement {
-    pos: string;
-    direction: Direction;
-    shipType: string;
 }

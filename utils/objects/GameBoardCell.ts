@@ -1,7 +1,8 @@
-import {CellState, GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
+import {GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
 import {Position} from "@/utils/class/Position";
 import {GameBoard} from "@/utils/objects/GameBoard";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
+import {CellState} from "@/utils/class/game/BoardManagers/CellState";
 
 export class GameBoardCell {
     /** All the board information */
@@ -46,7 +47,7 @@ export class GameBoardCell {
         return "#00000000";
     }
 
-    public get isClickable() {return this.isChecked}
+    public get isClickable() {return this.isChecked;}
 
     public markAsSearched() {
         this._searched = true;
@@ -59,6 +60,6 @@ export class GameBoardCell {
             isChecked: this.isChecked,
             hasShip: this.hasShip, // TODO: Put false if it's the enemies board
             pos: this.position.getStringCoordinates()
-        }
+        };
     }
 }

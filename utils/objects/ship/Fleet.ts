@@ -1,9 +1,10 @@
-import {GameBoardManager, ShipPlacement} from "@/utils/class/game/GameManagers/GameBoardManager";
+import {GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
 import {GridUtils} from "@/utils/class/GridUtils";
 import {Orientation} from "@/utils/class/Orientation";
 import {Position} from "@/utils/class/Position";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
+import {ShipPlacement} from "@/utils/class/game/ShipManagers/ShipPlacement";
 
 export type Direction = "up" | "right" | "down" | "left"
 
@@ -17,7 +18,7 @@ export class Fleet {
 
     public get board() {return this.boardManager.board;}
 
-    /** check if we can place a ship there */
+    /** Check if we can place a ship there */
     public canPlaceShip(ship: ShipType, anchorPosition: Position, facing: Direction) {
         for (let i = 0; i < ship.length; i++) {
             // Calculate the position of the ship part
@@ -69,6 +70,6 @@ export class Fleet {
     }
 
     public exportState(): ShipPlacement[] {
-        return this.ships.map(ship => ship.exportState())
+        return this.ships.map(ship => ship.exportState());
     }
 }

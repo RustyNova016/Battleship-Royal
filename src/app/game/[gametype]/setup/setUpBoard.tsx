@@ -10,26 +10,30 @@ import {BoardDisplay} from "@/utils/objects/DisplayBoard/BoardDisplay";
 
 export function SetUpBoard() {
     const [gameBoardSetUpManager, setGameBoardSetUpManager] = useState(new GameBoardSetupManager(testShipTypes));
-    const [displayBoard, setDisplayBoard] = useState<BoardDisplay>(new BoardDisplay());
+    const [displayBoard, setDisplayBoard] = useState<BoardDisplay>(new BoardDisplay().updateFromState(gameBoardSetUpManager.exportState()));
     const [placementDirection, setPlacementDirection] = useState<Direction>("up");
 
-    // Update the display class with the info of the logic class
-    // This is only needed for the setup, as we don't need to ask the server if a ship placement is valid
-    displayBoard.updateFromState(gameBoardSetUpManager.exportState())
+    function updateDisplay() {
+        // Update the display class with the info of the logic class
+        // This is only needed for the setup, as we don't need to ask the server if a ship placement is valid
+        setDisplayBoard(new BoardDisplay().updateFromState(gameBoardSetUpManager.exportState()));
+    }
 
     /** Handles the rotation of the ship */
     function rotatePlacement() {
-        setPlacementDirection(Orientation.rotateClockwise(placementDirection))
+        setPlacementDirection(Orientation.rotateClockwise(placementDirection));
     }
 
     /** Handles the placement of a ship */
     function onCellClick(pos: Position) {
-        gameBoardSetUpManager.handlePlacement(pos, placementDirection)
+        gameBoardSetUpManager.handlePlacement(pos, placementDirection);
+        updateDisplay();
     }
 
     return <>
-        <button onClick={() => {rotatePlacement()}}>↻</button>
+        <button onClick={() => {rotatePlacement();}}>↻</button>
         facing: {placementDirection}
         <Board board={displayBoard} cellClickHandler={onCellClick}/>
-    </>
+        <button>Send</button>
+    </>;
 }
