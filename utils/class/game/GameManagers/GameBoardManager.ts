@@ -4,6 +4,7 @@ import {Direction, Fleet} from "@/utils/objects/ship/Fleet";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
 import {GameBoardState} from "@/utils/class/game/GameManagers/GameBoardState";
+import {ShipTypeTable} from "@/utils/ORM Entities/ShipTypes/ShipTypeTable";
 
 /** This class manages everything related to one board */
 export class GameBoardManager {
@@ -18,6 +19,25 @@ export class GameBoardManager {
         this.fleet = new Fleet(this);
     }
 
+    /** Export the state of this board for the client rendering */
+    public exportState(): GameBoardState {
+        return {
+            board: this.board.exportState(),
+            ships: this.fleet.exportState()
+        };
+    }
+
+    /** Insert the state */
+    public fromState(state: GameBoardState, shipTypeTable: ShipTypeTable) {
+        const newManager = new GameBoardManager();
+
+        //Place each ship
+        state.ships.forEach(shipToPlace => {
+            newManager.placeShip(shipTypeTable.getOrThrow(shipToPlace.shipType), shipToPlace.pos, shipToPlace.direction);
+        });
+
+    }
+
     public placeShip(shipType: ShipType, pos: Position, direction: Direction) {
         // Check if the placement is possible
         if (!this.fleet.canPlaceShip(shipType, pos, direction)) {return false;}
@@ -27,13 +47,5 @@ export class GameBoardManager {
         this.fleet.insertShip(ship);
 
         return true;
-    }
-
-    /** Export the state of this board for the client rendering */
-    public exportState(): GameBoardState {
-        return {
-            board: this.board.exportState(),
-            ships: this.fleet.exportState()
-        };
     }
 }

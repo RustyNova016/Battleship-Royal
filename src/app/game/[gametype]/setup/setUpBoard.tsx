@@ -9,7 +9,7 @@ import {useState} from "react";
 import {BoardDisplay} from "@/utils/objects/DisplayBoard/BoardDisplay";
 
 export function SetUpBoard() {
-    const [gameBoardSetUpManager, setGameBoardSetUpManager] = useState(new GameBoardSetupManager(testShipTypes));
+    const [gameBoardSetUpManager] = useState(new GameBoardSetupManager(testShipTypes));
     const [displayBoard, setDisplayBoard] = useState<BoardDisplay>(new BoardDisplay().updateFromState(gameBoardSetUpManager.exportState()));
     const [placementDirection, setPlacementDirection] = useState<Direction>("up");
 
