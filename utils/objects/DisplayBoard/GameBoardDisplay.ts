@@ -1,15 +1,25 @@
 import {DataTable} from "@/utils/class/ORM/ORM/DataTable";
-import {CellDisplay} from "@/utils/objects/DisplayBoard/CellDisplay";
+import {GameBoardCellDisplay} from "@/utils/objects/DisplayBoard/GameBoardCellDisplay";
 import {classicBoardLength} from "../../../data/Boards";
 
 import {GameBoardState} from "@/utils/class/game/GameManagers/GameBoardState";
+import {CellState} from "@/utils/class/game/BoardManagers/CellState";
 
-/** Board component data, only handles display logic */
-export class BoardDisplay extends DataTable<CellDisplay> {
-    isClickable = false;
+/** All the data to display a board */
+export class GameBoardDisplay extends DataTable<GameBoardCellDisplay> {
+    public userId = "";
+
+    constructor(cells: CellState[]) {
+        super();
+        cells.forEach(cellState => {
+            this.getOrCreate(cellState.pos).updateFromState(cellState);
+        });
+    }
+
+    get id() {return this.userId;}
 
     public create(id: string) {
-        this.set(id, new CellDisplay(id));
+        this.set(id, new GameBoardCellDisplay(id));
     }
 
     public getOrCreate(id: string) {
@@ -46,5 +56,16 @@ export class BoardDisplay extends DataTable<CellDisplay> {
         });
         return this;
     }
+    
+    /** Set all the cells as clickable or not */
+    public setClickable(click: boolean) {
+        this.toValueArray().forEach(cell => {
+            console.log(`Setting cell ${cell.pos.getStringCoordinates()} as ${click && !cell.isSearched}`);
+            cell.isClickable = click && !cell.isSearched;
+        });
+        return this;
+    }
+
+
 }
 

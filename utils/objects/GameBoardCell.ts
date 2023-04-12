@@ -29,7 +29,7 @@ export class GameBoardCell {
 
     private _searched: boolean;
 
-    get isChecked(): boolean {
+    get isSearched(): boolean {
         return this._searched;
     }
 
@@ -41,13 +41,13 @@ export class GameBoardCell {
 
     public getColor() {
         if (this.isHit) {return "#dc3737";}
-        if (this.isChecked) {return "#2651c2";}
+        if (this.isSearched) {return "#2651c2";}
         if (this.hasShip) {return "#aaaaaa";}
 
         return "#00000000";
     }
 
-    public get isClickable() {return this.isChecked;}
+    public get isClickable() {return this.isSearched;}
 
     public markAsSearched() {
         this._searched = true;
@@ -56,8 +56,7 @@ export class GameBoardCell {
     /** Export the state of this cell for the client rendering */
     public exportState(): CellState {
         return {
-            isHit: this.isHit,
-            isChecked: this.isChecked,
+            isSearched: this.isSearched,
             hasShip: this.hasShip, // TODO: Put false if it's the enemies board
             pos: this.position.getStringCoordinates()
         };

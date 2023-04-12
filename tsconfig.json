@@ -72,7 +72,7 @@
     /* Add 'undefined' to a type when accessed using an index. */
     "noImplicitOverride": true,
     /* Ensure overriding members in derived classes are marked with an override modifier. */
-    "noPropertyAccessFromIndexSignature": true
+    //"noPropertyAccessFromIndexSignature": true
     /* Enforces using indexed accessors for keys declared using an indexed type. */
   },
   "include": [
