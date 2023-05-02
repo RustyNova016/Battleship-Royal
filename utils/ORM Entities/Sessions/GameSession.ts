@@ -114,6 +114,7 @@ export class GameSession {
     private addPlayer(player: Player) {
         this.players.insert(player);
         GameServerLogger.playerJoin(player, this);
+        this.onPlayerJoin();
         this.onSessionUpdate();
     }
 
