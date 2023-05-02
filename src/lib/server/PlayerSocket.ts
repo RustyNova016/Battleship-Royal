@@ -39,6 +39,7 @@ export class PlayerSocket {
 
     /** Send the turn state to the client */
     public sendTurnState(isPlayerTurn: boolean) {
+        console.log(`> Sending turn state to ${this.player.id}`);
         this.IO.to(this.socket.id).emit("isPlayerTurn", isPlayerTurn);
     }
 
@@ -124,6 +125,7 @@ export class PlayerSocket {
 
     /** Send the opponent's board to the client */
     private sendOpponentBoard(opponentBoard: CellState[]) {
+        console.log(`> Sending opponent board to ${this.player.id}`);
         this.IO.to(this.socket.id).emit("setOpponentBoard", opponentBoard);
     }
 

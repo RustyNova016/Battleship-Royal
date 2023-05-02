@@ -17,14 +17,14 @@ export class DuelTableHandler {
         const results = duelTable.getWinResults();
         if (results.isNone()) {return;}
 
-
         this.queue.push(results.get().winner);
     }
 
     public startSession(queue: Collection<Player>) {
         this.queue = queue;
 
-        this.processQueue();
+        this.processQueue().unwrap();
+        this.duelTables.forEach(table => table.sendTurnState());
     }
 
     /** Put all the players in the queue into dueltables */

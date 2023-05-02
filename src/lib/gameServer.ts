@@ -1,4 +1,4 @@
-import { GameServer } from "@/srcLib/server/GameServer";
+import {GameServer} from "@/lib/server/GameServer";
 
 declare let global: { gameServer: GameServer };
 

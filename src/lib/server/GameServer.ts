@@ -1,13 +1,13 @@
 import {GameSessionTable} from "@/utils/ORM Entities/Sessions/GameSessionTable";
 import {UserBoard} from "@/utils/ORM Entities/UserBoard/UserBoard";
-import {PlayerTable} from "@/utils/ORM Entities/Players/PlayerTable";
-import {GameServerLogger} from "@/srcLib/server/GameServerLogger";
 import {Err, Result, Some} from "@rustynova/monads";
 import {Socket} from "socket.io";
-import {ClientToServerEvents, ServerToClientEvents,} from "@/lib/SocketIO/events/clientToServerEvents";
 import {GameSession} from "@/utils/ORM Entities/Sessions/GameSession";
 import {ServerSocketHandler} from "@/lib/server/ServerSocketHandler";
 import {Player} from "@/utils/ORM Entities/Players/Player";
+import {ClientToServerEvents, ServerToClientEvents} from "../../../lib/SocketIO/events/clientToServerEvents";
+import {GameServerLogger} from "@/lib/server/GameServerLogger";
+import {PlayerTable} from "@/utils/ORM Entities/Players/PlayerTable";
 
 /** Class that represent the game server */
 export class GameServer {
@@ -44,18 +44,17 @@ export class GameServer {
             // Make the player join the session
             .map((player) => {
                 const session = this._sessions.getOrCreateSession(gamemode);
-                return session.addPlayer(player).inspect(() => GameServerLogger.playerJoin(player, session));
+                return session.addPlayerOld(player).inspect(() => GameServerLogger.playerJoin(player, session));
             });
     }
 
     public matchMaker(gamemode: string, player: Player): Result<GameSession, Error> {
-        console.log("Player board: ", player.board);
         if(player.board.isNone()) {
             console.log(`[Session] > The player ${player.id} didn't provide a board before trying to join a session`);
             return Err(new Error("[Session] > The player didn't provide a board before trying to join a session"));}
         return this._sessions
             .getOrCreateSession(gamemode)
-            .addPlayer(player)
+            .addPlayerOld(player)
             .inspect((session) => GameServerLogger.playerJoin(player, session));
     }
 

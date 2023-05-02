@@ -3,11 +3,17 @@ import {GameSession} from "@/utils/ORM Entities/Sessions/GameSession";
 import {Err, None, Ok, Option, Result, Some} from "@rustynova/monads";
 import {Position} from "@/utils/class/Position";
 
+enum PlayerTurn {
+    playerA,
+    playerB
+}
+
 /** Class that handle a duel of two players */
 export class DuelTable {
     playerA: Player;
     playerB: Player;
     session: GameSession;
+    turn: PlayerTurn = PlayerTurn.playerA;
 
     private constructor(playerA: Player, playerB: Player, session: GameSession) {
         this.playerA = playerA;
@@ -15,9 +21,16 @@ export class DuelTable {
         this.session = session;
     }
 
+    public sendTurnState() {
+        return Ok(undefined)
+            .and(this.playerA.getSocket().inspect(socket => socket.sendTurnState(this.turn === PlayerTurn.playerA)))
+            .and(this.playerB.getSocket().inspect(socket => socket.sendTurnState(this.turn === PlayerTurn.playerB)));
+    }
+
     /** Set the player's dueltable */
     private link() {
-        return this.playerA.setDuelTable(this).andThen(() => this.playerB.setDuelTable(this));
+        return this.playerA.setDuelTable(this)
+            .andThen(() => this.playerB.setDuelTable(this));
     }
 
     public static new(playerA: Player, playerB: Player, session: GameSession): Result<DuelTable, Error> {
@@ -49,5 +62,11 @@ export class DuelTable {
         }
 
         return Err(new Error("Provided player isn't at this duel table"));
+    }
+
+    /** Return true if it's this player turn */
+    public isPlayerTurn(player: Player): boolean {
+        return (player === this.playerA && this.turn === PlayerTurn.playerA) ||
+            (player === this.playerB && this.turn === PlayerTurn.playerB);
     }
 }

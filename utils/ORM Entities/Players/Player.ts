@@ -104,7 +104,8 @@ export class Player {
     }
 
     public setDuelTable(duelTable: DuelTable) {
-        if (this.session.isNoneOr(session => duelTable.session.id !== session.id)) {return Err(new Error(`Cannot set dueltable. The player is not in session ${duelTable.session.id}`));}
+        //Console.log(`Setting duel table for player ${this.id}`);
+        if (this.session.isNoneOr(session => duelTable.session.id !== session.id)) {return Err(new Error(`Cannot set dueltable. The player [${this.id}] is not in session [${duelTable.session.id}]`));}
         this._duelTable = Some(duelTable);
 
         return this.getSocket().andThen(socket => socket.onNewDuelTable());
