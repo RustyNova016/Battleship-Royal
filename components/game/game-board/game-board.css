@@ -1,0 +1,10 @@
+.GameBoard {
+    display: grid;
+    align-items: stretch;
+    justify-items: stretch;
+    align-self: stretch;
+    aspect-ratio: 1;
+    overflow: visible;
+    max-height: 100%;
+    max-width: 100%;
+}
