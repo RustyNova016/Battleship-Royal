@@ -9,13 +9,13 @@ import {useContext, useEffect, useState} from "react";
 import {GameBoardDisplay} from "@/utils/objects/DisplayBoard/GameBoardDisplay";
 import {GameContext} from "@/components/context/gameContext";
 import {useRouter} from "next/navigation";
-import {Some} from "@sniptt/monads";
+import {Some} from "@rustynova/monads";
 
 export function SetUpBoard() {
     const [gameBoardSetUpManager] = useState(new GameBoardSetupManager(testShipTypes));
     const [displayBoard, setDisplayBoard] = useState<GameBoardDisplay>(new GameBoardDisplay([]));
     const [placementDirection, setPlacementDirection] = useState<Direction>("up");
-    const gameContext = useContext(GameContext);
+    const playerFleet = useContext(GameContext);
     const router = useRouter();
 
 
@@ -42,21 +42,22 @@ export function SetUpBoard() {
 
     /** Handles the placement of a ship */
     function onCellClick(pos: Position) {
-        gameBoardSetUpManager.handlePlacement(pos, placementDirection);
+        gameBoardSetUpManager.handlePlacement(pos, placementDirection).unwrap();
         updateDisplay();
     }
 
     function onSubmit() {
-        console.log(gameContext);
-        gameContext.fleet = gameBoardSetUpManager.fleet;
-        gameContext.board = gameBoardSetUpManager.board;
-        console.log(gameContext);
+        console.log(playerFleet);
+        playerFleet.push(...gameBoardSetUpManager.fleet.exportState());
+        console.log(playerFleet);
         
         //TODO: Category
+        console.log("[Client] Fleet Data");
+        console.log("[Client] > Finished setting up the board, sending to the game arena");
         router.push("/game/1v1");
     }
 
-    console.log(gameContext);
+    console.log(playerFleet);
 
     //FIXME: When exporting the state to the display board, the cell cannot determine if it contain a ship or not, so nothing display
 
