@@ -30,9 +30,6 @@
       "@/components/*": [
         "components/*"
       ],
-      "@/lib/*": [
-        "lib/*"
-      ],
       "@/utils/*": [
         "utils/*"
       ],

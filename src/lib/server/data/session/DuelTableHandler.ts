@@ -37,6 +37,7 @@ export class DuelTableHandler {
             if (newDuelTable.isErr()) {return newDuelTable;}
 
             this.duelTables.push(newDuelTable.unwrap()); //TODO: Put .get() once the package is fixed
+            this.queue.splice(0, 2);
         }
         return Ok(undefined);
     }

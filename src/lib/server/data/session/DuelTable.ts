@@ -21,6 +21,62 @@ export class DuelTable {
         this.session = session;
     }
 
+    public static new(playerA: Player, playerB: Player, session: GameSession): Result<DuelTable, Error> {
+        const table = new this(playerA, playerB, session);
+        return table.link().replaceOk(table);
+    }
+
+    /** Change the turn */
+    public changeTurn() {
+        if (this.turn === PlayerTurn.playerA) {
+            console.log("[DuelTable] > Changing turn");
+            this.turn = PlayerTurn.playerB;
+        } else {
+            this.turn = PlayerTurn.playerA;
+        }
+
+        return this.playerA.getSocket().inspect(socket => socket.updateTurnState())
+            .andThen(() => this.playerB.getSocket().inspect(socket => socket.updateTurnState()));
+    }
+
+    /** Return the opponent of this player */
+    public getOtherPlayer(player: Player): Result<Player, Error> {
+        if (player.id === this.playerA.id) {
+            return Ok(this.playerB);
+        }
+
+        if (player.id === this.playerB.id) {
+            return Ok(this.playerA);
+        }
+
+        return Err(new Error("Provided player isn't at this duel table"));
+    }
+
+    public getWinResults(): Option<{ winner: Player, loser: Player }> {
+        if (this.playerA.isDefeated()) {return Some({loser: this.playerA, winner: this.playerB});}
+        if (this.playerB.isDefeated()) {return Some({loser: this.playerB, winner: this.playerA});}
+        return None;
+    }
+
+    /** Handle the move of a player */
+    public handleMove(fromPlayer: Player, position: Position) {
+        console.log(`Player receiving move: ${position.getStringCoordinates()} to player ${fromPlayer.id}`);
+
+        if(!this.isPlayerTurn(fromPlayer)) {return Err(new Error("This isn't the player's turn"));}
+
+        return this
+            .getOtherPlayer(fromPlayer)
+            .andThen(otherPlayer => otherPlayer.receiveMove(position))
+            .andThen(() => this.changeTurn())
+            .inspect(() => fromPlayer.getSocket().inspect(socket => socket.updateOpponentBoard()));
+    }
+
+    /** Return true if it's this player turn */
+    public isPlayerTurn(player: Player): boolean {
+        return (player === this.playerA && this.turn === PlayerTurn.playerA) ||
+            (player === this.playerB && this.turn === PlayerTurn.playerB);
+    }
+
     public sendTurnState() {
         return Ok(undefined)
             .and(this.playerA.getSocket().inspect(socket => socket.sendTurnState(this.turn === PlayerTurn.playerA)))
@@ -31,42 +87,5 @@ export class DuelTable {
     private link() {
         return this.playerA.setDuelTable(this)
             .andThen(() => this.playerB.setDuelTable(this));
-    }
-
-    public static new(playerA: Player, playerB: Player, session: GameSession): Result<DuelTable, Error> {
-        const table = new this(playerA, playerB, session);
-        return table.link().replaceOk(table);
-    }
-    
-    public getWinResults(): Option<{ winner: Player, loser: Player }> {
-        if(this.playerA.isDefeated()) {return Some({loser: this.playerA, winner: this.playerB});}
-        if(this.playerB.isDefeated()) {return Some({loser: this.playerB, winner: this.playerA});}
-        return None;
-    }
-
-    /** Handle the move of a player */
-    public handleMove(player: Player, position: Position) {
-        return this
-            .getOtherPlayer(player)
-            .andThen(otherPlayer => otherPlayer.receiveMove(position));
-    }
-
-    /** Return the opponent of this player */
-    public getOtherPlayer(player: Player): Result<Player, Error> {
-        if(player.id === this.playerA.id) {
-            return Ok(this.playerB);
-        }
-
-        if(player.id === this.playerB.id) {
-            return Ok(this.playerA);
-        }
-
-        return Err(new Error("Provided player isn't at this duel table"));
-    }
-
-    /** Return true if it's this player turn */
-    public isPlayerTurn(player: Player): boolean {
-        return (player === this.playerA && this.turn === PlayerTurn.playerA) ||
-            (player === this.playerB && this.turn === PlayerTurn.playerB);
     }
 }
