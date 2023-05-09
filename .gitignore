@@ -36,4 +36,6 @@ yarn-error.log*
 next-env.d.ts
 /prisma/migrations/
 /.env
+/.env.development.local
 /prisma/generated/
+/.vscode/
