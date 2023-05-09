@@ -8,17 +8,38 @@ enum PlayerTurn {
     playerB
 }
 
+enum TableState {
+    starting,
+    waitForPlayerMove,
+    waitForPlayerA,
+    waitForPlayerB,
+    endOfTurn,
+    finished
+}
+
 /** Class that handle a duel of two players */
 export class DuelTable {
     playerA: Player;
     playerB: Player;
     session: GameSession;
     turn: PlayerTurn = PlayerTurn.playerA;
+    state: TableState = TableState.starting;
 
     private constructor(playerA: Player, playerB: Player, session: GameSession) {
         this.playerA = playerA;
         this.playerB = playerB;
         this.session = session;
+    }
+
+    private handleState() {
+        switch (this.state) {
+        case TableState.starting:
+            break;
+        case TableState.waitForPlayerMove:
+            break;
+        case TableState.endOfTurn:
+
+        }
     }
 
     public static new(playerA: Player, playerB: Player, session: GameSession): Result<DuelTable, Error> {
@@ -28,6 +49,8 @@ export class DuelTable {
 
     /** Change the turn */
     public changeTurn() {
+
+        // Change the turn
         if (this.turn === PlayerTurn.playerA) {
             console.log("[DuelTable] > Changing turn");
             this.turn = PlayerTurn.playerB;
@@ -35,8 +58,22 @@ export class DuelTable {
             this.turn = PlayerTurn.playerA;
         }
 
-        return this.playerA.getSocket().inspect(socket => socket.updateTurnState())
-            .andThen(() => this.playerB.getSocket().inspect(socket => socket.updateTurnState()));
+
+
+        const winResults = this.getWinResults();
+        if (winResults.isSome()) {
+            return Ok(undefined)
+                .andThen(() => winResults.get().winner.getSocket().andThen());
+        }
+
+        return this.playerA.getSocket().inspect(socket => {
+            socket.updateTurnState();
+            socket.updatePlayerBoard();
+        })
+            .andThen(() => this.playerB.getSocket().inspect(socket => {
+                socket.updateTurnState();
+                socket.updatePlayerBoard();
+            }));
     }
 
     /** Return the opponent of this player */
@@ -60,22 +97,31 @@ export class DuelTable {
 
     /** Handle the move of a player */
     public handleMove(fromPlayer: Player, position: Position) {
+        if(this.state !== TableState.waitForPlayerMove) {return Err("Cannot handle move: The dueltable isn't accepting moves"); }
         console.log(`Player receiving move: ${position.getStringCoordinates()} to player ${fromPlayer.id}`);
-
-        if(!this.isPlayerTurn(fromPlayer)) {return Err(new Error("This isn't the player's turn"));}
+        if (!this.isPlayerTurn(fromPlayer)) {return Err(new Error("This isn't the player's turn"));}
 
         return this
             .getOtherPlayer(fromPlayer)
             .andThen(otherPlayer => otherPlayer.receiveMove(position))
+            .inspect(() => this.state = TableState.endOfTurn)
             .andThen(() => this.changeTurn())
             .inspect(() => fromPlayer.getSocket().inspect(socket => socket.updateOpponentBoard()));
     }
+
+
 
     /** Return true if it's this player turn */
     public isPlayerTurn(player: Player): boolean {
         return (player === this.playerA && this.turn === PlayerTurn.playerA) ||
             (player === this.playerB && this.turn === PlayerTurn.playerB);
     }
+
+    //Public onEndOfTurn() {
+    //    Return this.changeTurn().andThen(() => {
+    //        This.getWinResults().isSome()
+    //    })
+    //}
 
     public sendTurnState() {
         return Ok(undefined)
@@ -87,5 +133,18 @@ export class DuelTable {
     private link() {
         return this.playerA.setDuelTable(this)
             .andThen(() => this.playerB.setDuelTable(this));
+    }
+
+    /** Update the players info */
+    private updatePlayers() {
+        return Ok(undefined)
+            .and(this.playerA.getSocket().inspect(socket => {
+                socket.updateTurnState();
+                socket.updatePlayerBoard();
+            }))
+            .and(this.playerB.getSocket().inspect(socket => {
+                socket.updateTurnState();
+                socket.updatePlayerBoard();
+            }));
     }
 }
