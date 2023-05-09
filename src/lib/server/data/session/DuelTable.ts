@@ -2,10 +2,12 @@ import {Player} from "@/utils/ORM Entities/Players/Player";
 import {GameSession} from "@/utils/ORM Entities/Sessions/GameSession";
 import {Err, None, Ok, Option, Result, Some} from "@rustynova/monads";
 import {Position} from "@/utils/class/Position";
+import {DuelTableHandler} from "@/lib/server/data/session/DuelTableHandler";
 
 enum PlayerTurn {
     playerA,
-    playerB
+    playerB,
+    none
 }
 
 enum TableState {
@@ -22,58 +24,58 @@ export class DuelTable {
     playerA: Player;
     playerB: Player;
     session: GameSession;
-    turn: PlayerTurn = PlayerTurn.playerA;
+    duelTableHandler: DuelTableHandler;
     state: TableState = TableState.starting;
+    turn: PlayerTurn = PlayerTurn.none;
 
-    private constructor(playerA: Player, playerB: Player, session: GameSession) {
+    constructor(playerA: Player, playerB: Player, session: GameSession, duelTableHandler: DuelTableHandler) {
         this.playerA = playerA;
         this.playerB = playerB;
         this.session = session;
+        this.duelTableHandler = duelTableHandler;
     }
 
-    private handleState() {
-        switch (this.state) {
-        case TableState.starting:
-            break;
-        case TableState.waitForPlayerMove:
-            break;
-        case TableState.endOfTurn:
-
-        }
-    }
-
-    public static new(playerA: Player, playerB: Player, session: GameSession): Result<DuelTable, Error> {
-        const table = new this(playerA, playerB, session);
+    public static new(playerA: Player, playerB: Player, session: GameSession, duelTableHandler: DuelTableHandler): Result<DuelTable, Error> {
+        const table = new this(playerA, playerB, session, duelTableHandler);
         return table.link().replaceOk(table);
     }
 
     /** Change the turn */
     public changeTurn() {
-
-        // Change the turn
-        if (this.turn === PlayerTurn.playerA) {
-            console.log("[DuelTable] > Changing turn");
-            this.turn = PlayerTurn.playerB;
-        } else {
-            this.turn = PlayerTurn.playerA;
-        }
-
-
-
         const winResults = this.getWinResults();
-        if (winResults.isSome()) {
-            return Ok(undefined)
-                .andThen(() => winResults.get().winner.getSocket().andThen());
+        switch (this.turn) {
+        case PlayerTurn.none:
+            if (winResults.isSome()) {break;}
+            this.turn = PlayerTurn.playerA;
+            break;
+
+        case PlayerTurn.playerA:
+            if (winResults.isSome()) {
+                this.turn = PlayerTurn.none;
+            } else {
+                this.turn = PlayerTurn.playerB;
+            }
+
+            break;
+
+        case PlayerTurn.playerB:
+            if (winResults.isSome()) {
+                this.turn = PlayerTurn.none;
+            } else {
+                this.turn = PlayerTurn.playerA;
+            }
+            break;
         }
 
-        return this.playerA.getSocket().inspect(socket => {
-            socket.updateTurnState();
-            socket.updatePlayerBoard();
-        })
-            .andThen(() => this.playerB.getSocket().inspect(socket => {
-                socket.updateTurnState();
-                socket.updatePlayerBoard();
-            }));
+        if(winResults.isSome()) {return this.endTable().replaceOk(undefined);}
+
+        return this.updatePlayers().replaceOk(undefined);
+    }
+
+    /** Destroy the table and put the remaining players in the queue */
+    private endTable() {
+        console.log("[Server] > Ending table: ", this.getWinResults());
+        return this.duelTableHandler.handleTableEnd(this);
     }
 
     /** Return the opponent of this player */
@@ -97,7 +99,7 @@ export class DuelTable {
 
     /** Handle the move of a player */
     public handleMove(fromPlayer: Player, position: Position) {
-        if(this.state !== TableState.waitForPlayerMove) {return Err("Cannot handle move: The dueltable isn't accepting moves"); }
+        //If(this.state !== TableState.waitForPlayerMove) {return Err("Cannot handle move: The dueltable isn't accepting moves"); }
         console.log(`Player receiving move: ${position.getStringCoordinates()} to player ${fromPlayer.id}`);
         if (!this.isPlayerTurn(fromPlayer)) {return Err(new Error("This isn't the player's turn"));}
 
@@ -109,19 +111,11 @@ export class DuelTable {
             .inspect(() => fromPlayer.getSocket().inspect(socket => socket.updateOpponentBoard()));
     }
 
-
-
     /** Return true if it's this player turn */
     public isPlayerTurn(player: Player): boolean {
         return (player === this.playerA && this.turn === PlayerTurn.playerA) ||
             (player === this.playerB && this.turn === PlayerTurn.playerB);
     }
-
-    //Public onEndOfTurn() {
-    //    Return this.changeTurn().andThen(() => {
-    //        This.getWinResults().isSome()
-    //    })
-    //}
 
     public sendTurnState() {
         return Ok(undefined)
@@ -129,10 +123,17 @@ export class DuelTable {
             .and(this.playerB.getSocket().inspect(socket => socket.sendTurnState(this.turn === PlayerTurn.playerB)));
     }
 
+    public start() {
+        if(this.turn !== PlayerTurn.none) {return;}
+
+        return this.changeTurn();
+    }
+
     /** Set the player's dueltable */
     private link() {
         return this.playerA.setDuelTable(this)
-            .andThen(() => this.playerB.setDuelTable(this));
+            .andThen(() => this.playerB.setDuelTable(this))
+            .inspect(() => this.updatePlayers());
     }
 
     /** Update the players info */
@@ -141,10 +142,12 @@ export class DuelTable {
             .and(this.playerA.getSocket().inspect(socket => {
                 socket.updateTurnState();
                 socket.updatePlayerBoard();
+                socket.updateLose();
             }))
             .and(this.playerB.getSocket().inspect(socket => {
                 socket.updateTurnState();
                 socket.updatePlayerBoard();
+                socket.updateLose();
             }));
     }
 }
