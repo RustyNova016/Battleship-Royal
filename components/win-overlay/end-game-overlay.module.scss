@@ -1,0 +1,26 @@
+.Background {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    /* Sit on top */
+    backdrop-filter: blur(0.1vmax);
+    position: absolute;
+}
+
+.Modal {
+    padding: 50px;
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    align-items: center;
+    justify-items: center;
+    align-content: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.88);
+    color: #FFFFFF;
+    border-radius: 20px;
+    flex-direction: column;
+}

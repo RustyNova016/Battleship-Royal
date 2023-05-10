@@ -1,8 +1,7 @@
 import "./game-board-cell.scss";
-import React, {useEffect, useRef} from "react";
+import React from "react";
 import Classnames from "classnames";
 import {Position} from "@/utils/class/Position";
-import autoAnimate from "@formkit/auto-animate";
 
 export interface GameBoardCellData {
     hasShip: boolean;
@@ -35,17 +34,8 @@ export const GameBoardCell: React.FC<GameBoardCellProps> = ({
 }) => {
     const backgroundColor = getBackgroundColor(hasShip, isSearched, !disabled);
 
-    const parentRef = useRef(null);
-
-    useEffect(() => {
-        if (parentRef.current) {
-            autoAnimate(parentRef.current);
-        }
-    }, [parent]);
-
     return (
-        <div ref={parentRef}
-            className={Classnames(className, "Cell")}
+        <div className={Classnames(className, "Cell")}
             style={{
                 gridColumn: pos.xBoard + " / " + pos.xBoard,
                 gridRow: pos.yBoard + " / " + pos.yBoard,
