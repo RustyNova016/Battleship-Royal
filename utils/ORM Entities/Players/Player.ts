@@ -104,14 +104,14 @@ export class Player {
     }
 
     public setDuelTable(duelTable: DuelTable) {
-        //Console.log(`Setting duel table for player ${this.id}`);
+        console.log(`Setting duel table for player ${this.id}`);
         if (this.session.isNoneOr(session => duelTable.session.id !== session.id)) {return Err(new Error(`Cannot set dueltable. The player [${this.id}] is not in session [${duelTable.session.id}]`));}
         this._duelTable = Some(duelTable);
 
         return this.getSocket().andThen(socket => socket.onNewDuelTable());
     }
 
-    setOpponent(newOpponent: Player) {
+    public setOpponent(newOpponent: Player) {
         if (newOpponent._opponent.isSomeAnd(opponent => opponent._id !== this._id)) {return Err("Cannot set newOpponent as opponent. newOpponent already have an opponent");}
         if (this._opponent.isSomeAnd(opponent => opponent._id !== newOpponent._id)) {return Err("Cannot set player as opponent. Player already have an opponent");}
         this._opponent = Some(newOpponent);
