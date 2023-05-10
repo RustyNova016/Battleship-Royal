@@ -4,13 +4,29 @@
     "componentsPath": "components"
   },
   "styling": {
-    "solution": "scss"
+    "solution": "scss modules"
   },
   "fileNamingConvention": "pascal-case",
   "formatting": {
     "formattingFile": {
-            "type": "editorconfig",
-            "filePath": "/.editorconfig"
-        }
+      "type": "editorconfig",
+      "filePath": "/.editorconfig"
+    }
+  },
+  "cssCompilation": {
+    "activateCssModules": true,
+    "cssModulesExt": [
+      ".modules.css"
+    ]
+  },
+  "sassCompilation": {
+    "modules": {
+      "include": [
+        "**/*.module.scss"
+      ],
+      "ignore": []
+    },
+    "compilerRuntime": "auto",
+    "resolveUrls": true
   }
 }
