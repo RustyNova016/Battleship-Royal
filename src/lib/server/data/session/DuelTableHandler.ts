@@ -54,6 +54,7 @@ export class DuelTableHandler {
             .at(0)
             .okOr(new Error("No Player remaining"))
             .andThen(player => player.getSocket())
-            .andThen(socket => socket.updateWin());
+            .andThen(socket => socket.updateWin())
+            .inspect(() => this.session.endSession());
     }
 }

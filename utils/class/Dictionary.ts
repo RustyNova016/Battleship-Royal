@@ -1,5 +1,6 @@
 import _ from "lodash";
 import {Collection} from "@/utils/class/Collection";
+import {Option, Some} from "@rustynova/monads";
 
 export class Dictionary<key, value> extends Map<key, value> {
     public applyToEach(fn: (value: value, key: key) => value): this {
@@ -8,7 +9,7 @@ export class Dictionary<key, value> extends Map<key, value> {
     }
 
     /** Return true if a value isn't undefined */
-    public isSet(key: key){ return this.get(key) === undefined};
+    public isSet(key: key){ return this.get(key) === undefined;};
     public cloneShallow(): this {
         return _.clone(this);
     }
@@ -73,9 +74,9 @@ export class Dictionary<key, value> extends Map<key, value> {
     public merge(otherDictionary: Dictionary<key, value>, overwrite = false) {
         for (const otherDictionaryElement of otherDictionary) {
             if (!overwrite && this.get(otherDictionaryElement[0]) !== undefined) {
-                continue
+                continue;
             }
-            this.set(otherDictionaryElement[0], otherDictionaryElement[1])
+            this.set(otherDictionaryElement[0], otherDictionaryElement[1]);
         }
     }
 
@@ -109,32 +110,41 @@ export class Dictionary<key, value> extends Map<key, value> {
     }
 
     public overwriteInto<map extends Map<key, value>>(dictionary: map) {
-        this.toArray().forEach(keyValue => dictionary.set(keyValue[0], keyValue[1]))
-        return dictionary
+        this.toArray().forEach(keyValue => dictionary.set(keyValue[0], keyValue[1]));
+        return dictionary;
     }
 
     /** Return true if all the values that match a condition */
     public matchAll(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean){
-        return this.toKeyArray().every(curKey => conditionFn(this.getOrThrow(curKey), curKey, this))
+        return this.toKeyArray().every(curKey => conditionFn(this.getOrThrow(curKey), curKey, this));
     }
 
     /** Return true if there is a value that matches a condition */
     public matchOne(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean){
-        return this.toKeyArray().some(curKey => conditionFn(this.getOrThrow(curKey), curKey, this))
+        return this.toKeyArray().some(curKey => conditionFn(this.getOrThrow(curKey), curKey, this));
     }
 
     /** Return true if one of the value doesn't match the condition
      * / matchOne() === false
      * */
     public doesntMatchOne(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean) {
-        return !this.matchOne(conditionFn)
+        return !this.matchOne(conditionFn);
     }
 
     /** Return true if all the values don't match the condition
      * / matchAll() === false
      * */
     public doesntMatchAll(conditionFn: (element: value, index: key, dictionary: Dictionary<key, value>) => boolean) {
-        return !this.matchAll(conditionFn)
+        return !this.matchAll(conditionFn);
+    }
+
+    /** Return an option of the result */
+    public get_asOption(key: key): Option<value> {
+        return Some(this.get(key));
+    }
+
+    public find(predicate: (value: value, index: number, obj: value[]) => unknown): Option<value> {
+        return this.toValueArray().findAsOption(predicate);
     }
 }
 

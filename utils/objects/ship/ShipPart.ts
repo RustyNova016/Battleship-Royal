@@ -35,8 +35,6 @@ export class ShipPart {
         return shipPart._cell.setShipPart(shipPart).replaceOk(shipPart);
     }
 
-    public canBePlaced() {return this._cell.canPutShipPart(this);}
-
     /** Check for equality */
     public eq(other: ShipPart) {
         return this._cell.eq(other._cell)

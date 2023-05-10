@@ -21,10 +21,10 @@ enum TableState {
 
 /** Class that handle a duel of two players */
 export class DuelTable {
+    duelTableHandler: DuelTableHandler;
     playerA: Player;
     playerB: Player;
     session: GameSession;
-    duelTableHandler: DuelTableHandler;
     state: TableState = TableState.starting;
     turn: PlayerTurn = PlayerTurn.none;
 
@@ -67,15 +67,13 @@ export class DuelTable {
             break;
         }
 
-        if(winResults.isSome()) {return this.endTable().replaceOk(undefined);}
 
-        return this.updatePlayers().replaceOk(undefined);
-    }
-
-    /** Destroy the table and put the remaining players in the queue */
-    private endTable() {
-        console.log("[Server] > Ending table: ", this.getWinResults());
-        return this.duelTableHandler.handleTableEnd(this);
+        return this.updatePlayers()
+            .andThen(() => {
+                if (winResults.isSome()) {return this.endTable().replaceOk(undefined);}
+                return Ok(undefined);
+            })
+            .replaceOk(undefined);
     }
 
     /** Return the opponent of this player */
@@ -124,9 +122,15 @@ export class DuelTable {
     }
 
     public start() {
-        if(this.turn !== PlayerTurn.none) {return;}
+        if (this.turn !== PlayerTurn.none) {return;}
 
         return this.changeTurn();
+    }
+
+    /** Destroy the table and put the remaining players in the queue */
+    private endTable() {
+        console.log("[Server] > Ending table: ", this.getWinResults());
+        return this.duelTableHandler.handleTableEnd(this);
     }
 
     /** Set the player's dueltable */

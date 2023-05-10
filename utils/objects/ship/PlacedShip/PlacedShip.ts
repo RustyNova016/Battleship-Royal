@@ -10,18 +10,6 @@ import {GameBoard} from "@/utils/objects/GameBoard";
 import {getShiptype} from "@/utils/mocks/ShipTypes";
 import {PipoRiskyLoop} from "../../../../lib/Pipo/PipoRiskyLoop";
 
-export class InvalidShipPartError extends Error {
-    public static invalidPlacement(part: ShipPart) {
-        return new this(
-            `Invalid Ship Part Placement: Part of ship [${
-                part.ship.shipType.name
-            }] cannot be placed at ${part.cell.position.getStringCoordinates()} \n
-            
-            Cell has ship [${part.cell.shipPart.unwrap().ship.shipType.name}]`
-        );
-    }
-}
-
 export class PlacedShip {
     public anchorPosition: Position;
     public facing: Direction;
@@ -38,10 +26,6 @@ export class PlacedShip {
     /** Return true if all the parts of the ships are defeated */
     get isDestroyed(): boolean {
         return this.parts.every(part => part.isDestroyed);
-    }
-
-    get isPlaced(): boolean {
-        return this.parts.every(part => part.isPlaced);
     }
 
     /** Place a shiptype on the board */

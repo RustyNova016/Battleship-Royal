@@ -6,29 +6,31 @@ export type DataTableItemType = { id: string }
 
 export abstract class DataTable<item extends DataTableItemType> extends Dictionary<string, item> {
     public insert(value: item) {
-        if (this.get(value.id) !== undefined) {return this}
+        if (this.get_asOption(value.id).isSome()) {return this;}
 
-        this.set(value.id, value)
-        this.onInsert(value)
-        return this
+        this.set(value.id, value);
+        this.onInsert(value);
+        return this;
     }
 
     public insertMultiple(values: item[]) {
-        values.forEach(value => this.insert(value))
-        return this
+        values.forEach(value => this.insert(value));
+        return this;
     }
 
     public insertMultipleOrThrow(values: item[]) {
-        values.forEach(value => this.insertOrThrow(value))
-        return this
+        values.forEach(value => this.insertOrThrow(value));
+        return this;
     }
 
     public insertOrThrow(value: item) {
-        if (this.get(value.id) !== undefined) {throw new Error("Error: Cannot insert value. Id already defined")}
+        if (this.get(value.id) !== undefined) {throw new Error("Error: Cannot insert value. Id already defined");}
 
-        this.insert(value)
-        return this
+        this.insert(value);
+        return this;
     }
 
-    protected onInsert(value: item): any {return value}
+    protected onInsert(value: item) {return value;}
+
+    public hasItem(value: item) {return this.has(value.id);}
 }

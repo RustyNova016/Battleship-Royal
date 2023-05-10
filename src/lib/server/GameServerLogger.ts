@@ -10,9 +10,15 @@ export class GameServerLogger {
         console.info(`[Server > Player] Receiving fleet of Player ${playerId}`);
     }
 
+    static onJoinRequest(player: Player) {
+        console.info(
+            `[Server > Player > Join] Player ${player.id} request to join a session`
+        );
+    }
+
     static playerJoin(player: Player, session: GameSession) {
         console.info(
-            `[Server > Player] Player ${player.id} joined session ${session.id}`
+            `[Server > Player > Join] Player ${player.id} joined session ${session.id}`
         );
         console.info(
             `  ∟[Server > Session] Player count: ${session.players.size} / ${session.maxPlayers}`

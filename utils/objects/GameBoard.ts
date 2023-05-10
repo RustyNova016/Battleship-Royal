@@ -6,15 +6,15 @@ import {Direction} from "@/utils/objects/ship/Fleet";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipPart} from "@/utils/objects/ship/ShipPart";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {UserGameInfo} from "@/utils/types/UserGameInfo";
 import {CellState} from "@/utils/class/game/BoardManagers/CellState";
+import {Err, Ok, Result} from "@rustynova/monads";
 
 /** Class that handles board logic */
 export class GameBoard {
-    /** Board Manager */
-    gameBoardManager: GameBoardManager;
     /** 2D array of the cells of the board */
     cells: GameBoardCell[][] = [];
+    /** Board Manager */
+    gameBoardManager: GameBoardManager;
     /** Is it considered as the enemies board? */
     isEnemy = false;
     /** Can the board be interacted with? */
@@ -25,15 +25,7 @@ export class GameBoard {
         this.generateCells();
     }
 
-    get isBoardReady(): boolean {
-        return this.fleet.areAllPlaced();
-    }
-
-    public static fromGameInfo(data: UserGameInfo): GameBoard {
-        const gameBoard = new GameBoard();
-        gameBoard.fleet.availableShipTypes = data.availableShipTypes;
-        return gameBoard;
-    }
+    public get cellArray() { return this.cells.flat();}
 
     /** Check if the ship can be placed at a position */
     public canPlaceShip(shipType: ShipType, pos: Position, direction: Direction) {
@@ -47,6 +39,12 @@ export class GameBoard {
         }
 
         return true;
+    }
+
+    /** Export the state of this board for the client rendering */
+    public exportState(): CellState[] {
+        const gameBoardCells = this.cells.flat();
+        return gameBoardCells.map(cell => cell.exportState());
     }
 
     public generateCells() {
@@ -63,6 +61,10 @@ export class GameBoard {
         this.cells = cells;
     }
 
+    public getBoardAsOpponent() {
+        return this.cellArray.map(cell => cell.getInfoAsOpponent());
+    }
+
     public getCellAt(pos: Position): GameBoardCell {
         const row = this.cells[pos.yArray];
         if (row === undefined) {
@@ -74,6 +76,20 @@ export class GameBoard {
             throw new Error("X index out of range");
         }
         return cell;
+    }
+
+    /** Return the cell at a position */
+    public getCellAt_safe(pos: Position): Result<GameBoardCell, Error> { //TODO: Optimize
+        const row = this.cells[pos.yArray];
+        if (row === undefined) {
+            return Err(new Error("Y index out of range"));
+        }
+
+        const cell = row[pos.xArray];
+        if (cell === undefined) {
+            return Err(new Error("X index out of range"));
+        }
+        return Ok(cell);
     }
 
     public placeShip(ship: PlacedShip) {
@@ -94,11 +110,5 @@ export class GameBoard {
         for (const ship of ships) {
             this.placeShip(ship);
         }
-    }
-
-    /** Export the state of this board for the client rendering */
-    public exportState(): CellState[] {
-        const gameBoardCells = this.cells.flat();
-        return gameBoardCells.map(cell => cell.exportState());
     }
 }
