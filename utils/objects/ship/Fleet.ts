@@ -4,7 +4,9 @@ import {Orientation} from "@/utils/class/Orientation";
 import {Position} from "@/utils/class/Position";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {ShipPlacement} from "@/utils/class/game/ShipManagers/ShipPlacement";
+import {SerializedFleet, ShipPlacementSerialized} from "@/utils/class/game/ShipManagers/ShipPlacementSerialized";
+import {Result} from "@rustynova/monads";
+import {GameBoard} from "@/utils/objects/GameBoard";
 
 export type Direction = "up" | "right" | "down" | "left"
 
@@ -20,6 +22,7 @@ export class Fleet {
 
     /** Check if we can place a ship there */
     public canPlaceShip(ship: ShipType, anchorPosition: Position, facing: Direction) {
+        // Check all the cells where the ship is located
         for (let i = 0; i < ship.length; i++) {
             // Calculate the position of the ship part
             const partPos = GridUtils.getOffsetPos(anchorPosition, Orientation.getShipTailDirection(facing), i);
@@ -30,6 +33,10 @@ export class Fleet {
         }
 
         return true;
+    }
+
+    public exportState(): SerializedFleet {
+        return this.ships.map(ship => ship.serialize());
     }
 
     public getAllOccupiedCells() {
@@ -51,13 +58,19 @@ export class Fleet {
 
     }
 
-    public placeShip(ship: ShipType, anchorPosition: Position, facing: Direction) {
-        if (!this.canPlaceShip(ship, anchorPosition, facing)) {
-            throw new Error("Cannot place a ship");
-        }
+    /** Add a ship to the fleet, and update the board's cells */
+    public placeShip(ship: ShipType, anchorPosition: Position, facing: Direction, board: GameBoard): Result<PlacedShip, Error> {
+        return PlacedShip
+            .place(
+                ship,
+                anchorPosition,
+                facing,
+                board
+            ).inspect(ship => this.ships.push(ship));
+    }
 
-        const placed = new PlacedShip(ship, anchorPosition, facing);
-        placed.createParts();
+    public toJSON(): ShipPlacementSerialized[] {
+        return this.ships.map(ship => ship.toJSON());
     }
 
     /** Return true is this type of ship is placed on the board */
@@ -69,7 +82,8 @@ export class Fleet {
         return false;
     }
 
-    public exportState(): ShipPlacement[] {
-        return this.ships.map(ship => ship.exportState());
+    /** Return true if all the ships are defeated */
+    public isDefeated(): boolean {
+        return this.ships.every(ship => ship.isDestroyed);
     }
 }

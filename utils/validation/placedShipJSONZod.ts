@@ -1,7 +1,7 @@
 import {z} from "zod";
 
-
 export const directionZod = z.enum(["up", "right", "down", "left"]);
+
 export const placedShipJSONZod = z.object({
     x: z.number().min(0).max(10),
     y: z.number().min(0).max(10),

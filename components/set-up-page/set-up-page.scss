@@ -1,0 +1,92 @@
+.page {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: flex;
+    align-content: space-evenly;
+    justify-content: space-evenly;
+    justify-items: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 0px 0px 50px;
+    margin: 0px;
+}
+
+.BoardArea {
+    width: 75%;
+    height: 75%;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+.TitleArea {
+    width: auto;
+    height: auto;
+}
+
+.ShellButton {
+    border: 1px solid #FFFFFF;
+    padding: 10px;
+    //aspect-ratio: 1;
+    background-color: transparent;
+    text-align: center;
+
+    &:enabled {
+        background-image: radial-gradient(circle at 50% 50%, #ffffff20 0%, rgba(255, 255, 255, 0) 100%);
+        transition: 0.25s;
+    }
+
+    &:enabled:hover {
+        background-color: #ffffff50;
+        transition: 0.25s;
+    }
+
+    border-radius:2px;
+    font-size:2.5em;
+    display:flex;
+    align-items:center;
+    justify-items:center;
+    justify-content:center;
+    align-content:center;
+    align-self:center;
+    text-align:center;
+}
+
+.SetupHeader {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.ShipBlock {
+    background-color: #FFFFFF;
+    aspect-ratio: 1;
+    height: 75%;
+    margin: 0%;
+}
+
+.ShipBlockRow {
+    height: 75%;
+    margin: 10%;
+    background-image: none;
+    background-color: 50% 50%/100% 100% radial-gradient(circle at 50% 50%, #EAEAEA 0%, rgba(255, 255, 255, 0) 100%);
+    background-position: 50% 50%;
+    background-size: 149% 149%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-origin: padding-box;
+    background-clip: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-items: center;
+    align-content: center;
+    justify-content: center;
+    padding: 25%;
+}

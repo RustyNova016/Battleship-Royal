@@ -1,0 +1,97 @@
+.Background {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    overflow: hidden;
+    position: relative
+}
+
+@keyframes rotate {
+    from {
+        rotate: 0deg;
+    }
+
+    50% {
+        scale: 1 1.5;
+    }
+
+    to {
+        rotate: 360deg;
+    }
+}
+
+.Blob {
+    background-color: black;
+    height: 100%;
+    aspect-ratio: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    border-radius: 50%;
+    //background: linear-gradient(to right, aquamarine, mediumpurple);
+    animation: rotate 20s infinite;
+    opacity: 0.8;
+    overflow: hidden;
+    transition: 1s cubic-bezier(.17, .84, .44, 1);
+}
+
+.Blur {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+    backdrop-filter: blur(12vmax);
+    overflow: hidden;
+}
+
+.Frame {
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 25%, #6E003080 100%);
+    background-color: transparent;
+    background-position: 50% 52%;
+    background-size: 172% 172%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-origin: padding-box;
+    background-clip: border-box;
+  position: absolute;
+  opacity: 0;
+}
+
+.Content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-items: start;
+}
+
+@keyframes wave-transform {
+    from {
+        translate: 0% 0%;
+    }
+
+    to {
+        translate: 100% 0%;
+    }
+}
+
+.wave {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    --mask:
+        radial-gradient(20.12vh at 50% 27.00vh, #000 99%, #0000 101%) calc(50% - 18vh) 0/36vh 100%,
+        radial-gradient(20.12vh at 50% -18vh, #0000 99%, #000 101%) 50% 9vh/36vh 100% repeat-x;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+
+    animation: wave-transform 20s infinite;
+}

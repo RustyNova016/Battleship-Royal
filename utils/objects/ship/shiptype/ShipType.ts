@@ -1,5 +1,5 @@
-import {ShipTypeModel} from ".prisma/client";
 import {DataTableItemType} from "@/utils/class/ORM/ORM/DataTable";
+import {ShipTypeModel} from ".prisma/client";
 
 export class ShipType implements ShipTypeModel, DataTableItemType {
     id: string;
@@ -13,7 +13,12 @@ export class ShipType implements ShipTypeModel, DataTableItemType {
     }
 
     public static fromModel(data: ShipTypeModel): ShipType {
-        return new ShipType(data.id, data.name, data.length)
+        return new ShipType(data.id, data.name, data.length);
+    }
+
+    /** Check for equality */
+    public eq(other: ShipType) {
+        return this.id === other.id;
     }
 }
 

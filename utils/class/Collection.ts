@@ -1,3 +1,6 @@
+import {Option, Some} from "@rustynova/monads";
+
+
 export class Collection<T> extends Array<T> {
     /** Insert elements at the provided index. Elements already in the array will be shifted */
     insertAt(index: number, value: T) {
@@ -38,6 +41,14 @@ export class Collection<T> extends Array<T> {
 
     public override map<U, thisArgType>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: thisArgType) {
         return new Collection(...super.map(callbackfn, thisArg));
+    }
+    
+    public findAsOption(predicate: (value: T, index: number, obj: T[]) => unknown): Option<T> {
+        return Some(this.find(predicate));
+    }
+
+    public at(index: number): Option<T> {
+        return Some(super.at(index));
     }
 }
 
