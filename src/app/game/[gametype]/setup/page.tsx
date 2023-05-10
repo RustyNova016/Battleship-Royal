@@ -1,14 +1,18 @@
-import {ShipType} from "@/utils/objects/ship/shiptype/ShipType";
-import {SetUpBoard} from "@/app/game/[gametype]/setup/setUpBoard";
+import {SetUpPage} from "@/components/set-up-page/SetUpPage";
+import {DynamicBackgroundProps} from "@/components/dynamic-background/dynamic-background";
+import {SetDynamicBackground} from "@/components/dynamic-background/dynamic-background-with-context";
+import {gamemodeParser} from "../../../../../data/GameMode";
 
-export const testShipTypes = [
-    new ShipType("1", "Destroyer", 2),
-    new ShipType("2", "Cruiser", 3),
-    new ShipType("3", "Submarine", 3),
-    new ShipType("4", "Aircraft carrier", 4),
-];
+const dynamicBackground: DynamicBackgroundProps = {
+    posX: "50%",
+    posY: "50%",
+    colorA: "#19305e"
+};
 
-export default async function () {
-    return <SetUpBoard/>;
+export default async function page({params}: { params: { gametype: string } }) {
+    return <>
+        <SetDynamicBackground {...dynamicBackground}/>
+        <SetUpPage gamemode={gamemodeParser.parse(params.gametype)}/>
+    </>;
 }
 
