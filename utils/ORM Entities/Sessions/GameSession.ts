@@ -5,6 +5,8 @@ import {GameServerLogger} from "@/lib/server/GameServerLogger";
 import {DuelTableHandler} from "@/lib/server/data/session/DuelTableHandler";
 import {GameSessionORM} from "@/prisma/ORM/GameSessionORM";
 import {GamemodesEnum, getGamemodeData} from "../../../data/GameMode";
+import {setTimeoutToDate} from "@/utils/setTimeoutToDate";
+import dayjs from "dayjs";
 
 export enum SessionState {
     setUp,
@@ -19,11 +21,13 @@ export class GameSession {
     public id: string;
     public players = new PlayerTable();
     public state = SessionState.setUp;
+    public readonly startDate = dayjs().add(2, "minutes");
 
     constructor(id: string, gamemode: GamemodesEnum) {
         this.id = id;
         this.gamemode = gamemode;
         GameSessionORM.saveSession(this);
+        setTimeoutToDate(this.startSession, this.startDate.toDate());
     }
 
     get maxPlayers() {
@@ -38,7 +42,9 @@ export class GameSession {
     public getData(): GameSessionData {
         return {
             id: this.id,
-            playerCount: this.players.size
+            playerCount: this.players.size,
+            startDate: this.startDate.toJSON(),
+            sessionState: this.state
         };
     }
 
@@ -125,6 +131,7 @@ export class GameSession {
 
     /** Start the session */
     private startSession() {
+        if(this.state !== SessionState.setUp){return;}
         console.log(`[Server > Session] Starting Session ${this.id}`);
         this.state = SessionState.onGoing;
         this.duelTableHandler.startSession(this.players.toValueArray());
@@ -135,4 +142,6 @@ export class GameSession {
 export interface GameSessionData {
     id: string;
     playerCount: number;
+    startDate: string;
+    sessionState: SessionState;
 }

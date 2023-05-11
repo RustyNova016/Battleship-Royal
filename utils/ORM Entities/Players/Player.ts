@@ -1,5 +1,5 @@
 import {GameBoardManager} from "@/utils/class/game/GameManagers/GameBoardManager";
-import {GameSession} from "@/utils/ORM Entities/Sessions/GameSession";
+import {GameSession, SessionState} from "@/utils/ORM Entities/Sessions/GameSession";
 import {ShipPlacementSerialized} from "@/utils/class/game/ShipManagers/ShipPlacementSerialized";
 import {PlacedShip} from "@/utils/objects/ship/PlacedShip/PlacedShip";
 import {GameServerLogger} from "@/lib/server/GameServerLogger";
@@ -10,38 +10,43 @@ import {PlayerSocket} from "@/lib/server/PlayerSocket";
 import {SocketServerSide} from "@/pages/api/socketio";
 import {Server} from "socket.io";
 import {ClientToServerEvents, ServerToClientEvents} from "../../../lib/SocketIO/events/clientToServerEvents";
+import {GameStateClient} from "@/utils/states/GameStateClient";
 
 
 export class Player {
-    private _board: Option<GameBoardManager> = None;
-    private _duelTable: Option<DuelTable> = None;
     private readonly _id: string;
-    private _opponent: Option<Player> = None;
-    private _session: Option<GameSession> = None;
     private _socket: Option<PlayerSocket> = None;
 
     constructor(id: string) {
         this._id = id;
     }
 
+    private _board: Option<GameBoardManager> = None;
+
     get board(): Option<GameBoardManager> {
         return this._board;
     }
+
+    private _duelTable: Option<DuelTable> = None;
 
     get duelTable(): Option<DuelTable> {
         return this._duelTable;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    private _opponent: Option<Player> = None;
 
     get opponent() {
         return this._opponent;
     }
 
+    private _session: Option<GameSession> = None;
+
     get session(): Option<GameSession> {
         return this._session;
+    }
+
+    get id(): string {
+        return this._id;
     }
 
     public createBoard(ships: ShipPlacementSerialized[]) {
@@ -80,7 +85,9 @@ export class Player {
 
     public joinSession(session: GameSession): Result<Player, Error> {
         // Check if the session has us
-        if (!session.hasPlayer(this)) {return Err(new Error("Player isn't in this session"));}
+        if (!session.hasPlayer(this)) {
+            return Err(new Error("Player isn't in this session"));
+        }
 
         this.setSession(session);
         return Ok(this);
@@ -97,7 +104,9 @@ export class Player {
     };
 
     public setBoard(board: GameBoardManager): Result<Player, Error> {
-        if (this._session.isSome()) {return Err(new Error("Cannot change board while in a game"));}
+        if (this._session.isSome()) {
+            return Err(new Error("Cannot change board while in a game"));
+        }
         this._board = Some(board);
         GameServerLogger.onSetBoardSuccess(this);
         return Ok(this);
@@ -105,15 +114,21 @@ export class Player {
 
     public setDuelTable(duelTable: DuelTable) {
         console.log(`Setting duel table for player ${this.id}`);
-        if (this.session.isNoneOr(session => duelTable.session.id !== session.id)) {return Err(new Error(`Cannot set dueltable. The player [${this.id}] is not in session [${duelTable.session.id}]`));}
+        if (this.session.isNoneOr(session => duelTable.session.id !== session.id)) {
+            return Err(new Error(`Cannot set dueltable. The player [${this.id}] is not in session [${duelTable.session.id}]`));
+        }
         this._duelTable = Some(duelTable);
 
         return this.getSocket().andThen(socket => socket.onNewDuelTable());
     }
 
     public setOpponent(newOpponent: Player) {
-        if (newOpponent._opponent.isSomeAnd(opponent => opponent._id !== this._id)) {return Err("Cannot set newOpponent as opponent. newOpponent already have an opponent");}
-        if (this._opponent.isSomeAnd(opponent => opponent._id !== newOpponent._id)) {return Err("Cannot set player as opponent. Player already have an opponent");}
+        if (newOpponent._opponent.isSomeAnd(opponent => opponent._id !== this._id)) {
+            return Err("Cannot set newOpponent as opponent. newOpponent already have an opponent");
+        }
+        if (this._opponent.isSomeAnd(opponent => opponent._id !== newOpponent._id)) {
+            return Err("Cannot set player as opponent. Player already have an opponent");
+        }
         this._opponent = Some(newOpponent);
         return Ok(undefined);
     }
@@ -121,7 +136,9 @@ export class Player {
     /** Set the session of the player */
     public setSession(session: GameSession): Result<GameSession, Error> {
         // Check if the session has us
-        if (!session.hasPlayer(this)) {return Err(new Error("Player isn't in this session"));}
+        if (!session.hasPlayer(this)) {
+            return Err(new Error("Player isn't in this session"));
+        }
 
         this._session = Some(session);
         return this.getSocket().andThen(socket => socket.updateSessionData());
@@ -130,5 +147,29 @@ export class Player {
     public setSocket(value: SocketServerSide, IO: Server<ClientToServerEvents, ServerToClientEvents>) {
         this._socket = Some(new PlayerSocket(value, this, IO));
     }
-}
 
+    public getState(): GameStateClient {
+        if (this.session.isNone()) {
+            return GameStateClient.idle;
+        }
+
+        const ses = this.session.get();
+        if (ses.state === SessionState.setUp) {
+            return GameStateClient.matchMaking;
+        }
+
+        const sessionOngoing = ses.state === SessionState.onGoing;
+        const hasDuelTable = this.duelTable.isSome();
+
+        if (sessionOngoing && !hasDuelTable) {
+            return GameStateClient.waitingForOpponent;
+        }
+        if (sessionOngoing && hasDuelTable) {
+            return GameStateClient.playing;
+        }
+        if (sessionOngoing && this._board.isSomeAnd(board => !board.isDefeated()))
+            if (ses.state === SessionState.ended && this._board.isSomeAnd(board => !board.isDefeated())) {
+                return GameStateClient.won;
+            }
+    }
+}

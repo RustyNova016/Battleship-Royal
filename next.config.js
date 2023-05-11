@@ -8,7 +8,6 @@ const nextConfig = {
     },
 
     devIndicators: {
-
         buildActivityPosition: 'bottom-right',
         buildActivity: true,
     },
@@ -25,6 +24,7 @@ const nextConfig = {
             },
         ],
     },
+
 }
 
 module.exports = nextConfig

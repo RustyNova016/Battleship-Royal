@@ -5,7 +5,6 @@ import Classnames from "classnames";
 import {PlayerBoard} from "@/app/game/[gametype]/PlayerBoard";
 import {DynamicBackgroundProps} from "@/components/dynamic-background/dynamic-background";
 import {dynamicContext} from "@/hooks/style/dynamicBackground";
-import {clientSocket} from "../../lib/SocketIO/ClientSocket";
 import {EndGameOverlay} from "@/components/win-overlay/end-game-overlay";
 
 export interface GamePageProps {
@@ -22,6 +21,8 @@ const dynamicBackgroundDefault: DynamicBackgroundProps = {
 };
 
 export enum GameState {
+    matchMaking,
+    waitingForOpponent,
     playing,
     won,
     lost,
@@ -29,27 +30,10 @@ export enum GameState {
 
 export const GamePage: React.FC<GamePageProps> = ({className = ""}) => {
     const [playerHealth, setPlayerHealth] = useState(12);
-    const [gameState, setGameState] = useState(GameState.playing);
     const backgroundSetter = useContext(dynamicContext);
-
-    // Win / Lose hooking
-    useEffect(() => {
-        const onWin = () => {setGameState(GameState.won);};
-        const onLose = () => {setGameState(GameState.lost);};
-
-        clientSocket.on("isWinner", onWin);
-        clientSocket.on("isLoser", onLose);
-
-        return () => {
-            clientSocket.off("isWinner", onWin);
-            clientSocket.off("isLoser", onLose);
-        };
-    }, []);
-
 
     // Dynamic Background
     useEffect(() => {
-        console.log(`Setting vignette as: ${playerHealth > 0 ? 1 - (playerHealth / 12) : 1}`);
         const back: DynamicBackgroundProps = {
             ...dynamicBackgroundDefault,
             vignette: {
@@ -57,14 +41,13 @@ export const GamePage: React.FC<GamePageProps> = ({className = ""}) => {
                 opacity: (playerHealth > 0 ? 1 - (playerHealth / 12) : 1),
             },
         };
-        console.log("Objh!", back);
         backgroundSetter(back);
     }, [backgroundSetter, playerHealth]);
 
     return (
         <>
             <div className={Classnames(className, "PageContent")}>
-                <EndGameOverlay state={gameState}/>
+                <EndGameOverlay/>
                 <PlayerBoard playerHealth={setPlayerHealth}/>
                 <OpponentBoard/>
             </div>

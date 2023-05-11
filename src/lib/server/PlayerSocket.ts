@@ -80,6 +80,10 @@ export class PlayerSocket {
             .inspect(isTurn => this.sendTurnState(isTurn));
     }
 
+    public updateGameState() {
+        return this.player.
+    }
+
     public updateWin() {
         return this.player
             .getBoard()
@@ -114,7 +118,9 @@ export class PlayerSocket {
         this.player
             .session
             .okOr(`Cannot quit empty session for player ${this.player.id}`)
-            .map(session => { session.playerQuit(this.player);});
+            .map(session => {
+                session.playerQuit(this.player);
+            });
     }
 
     private onReceiveMove(pos: Position) {
@@ -142,7 +148,9 @@ export class PlayerSocket {
     }
 
     private saveSerializedFleet(shipsSerialized: SerializedFleet): Result<boolean, Error> {
-        if (shipsSerialized.length < 4) {return Err(ShipUnSerializationError.getShipNumberError(shipsSerialized));}
+        if (shipsSerialized.length < 4) {
+            return Err(ShipUnSerializationError.getShipNumberError(shipsSerialized));
+        }
         const newBoard = new GameBoardManager();
 
         return PipoRiskyLoop

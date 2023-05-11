@@ -3,7 +3,7 @@ import {PropsWithChildren} from "react";
 import {GameModeContext} from "@/components/context/GameModeContext";
 import {GamemodesEnum} from "../../../../data/GameMode";
 
-export function GamemodeSetter(props: { gamemode: GamemodesEnum } & PropsWithChildren) {
+export function GamemodeProvider(props: { gamemode: GamemodesEnum } & PropsWithChildren) {
     return <GameModeContext.Provider value={props.gamemode}>
         {props.children}
     </GameModeContext.Provider>;

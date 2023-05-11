@@ -4,6 +4,7 @@ import {Socket} from "socket.io-client";
 import {ResultSerialized} from "@rustynova/monads/lib/result/result";
 import {CellState} from "@/utils/class/game/BoardManagers/CellState";
 import {GamemodesEnum} from "../../../data/GameMode";
+import {GameStateClient} from "@/utils/states/GameStateClient";
 
 export interface ClientToServerEvents {
     joinSession: (
@@ -29,6 +30,11 @@ export interface ServerToClientEvents {
     isPlayerTurn: (state: boolean) => void
     setOpponentBoard: (opponentBoard: CellState[]) => void;
     setPlayerBoard: (playerBoard: CellState[]) => void;
+
+    // State Event
+    setGameState: (gameState: GameStateClient) => void;
+
+    // End Event
     isWinner:(isWinner: boolean) => void;
     isLoser: (isLoser: boolean) => void
 }

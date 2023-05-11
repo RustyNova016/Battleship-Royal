@@ -3,8 +3,6 @@ import {Server, Socket} from "socket.io";
 import {NextApiResponseWithSocket} from "../../../lib/SocketIO/Types";
 import {ClientToServerEvents, ServerToClientEvents} from "../../../lib/SocketIO/events/clientToServerEvents";
 import gameServer from "@/lib/gameServer";
-import {GameServerLogger} from "@/lib/server/GameServerLogger";
-import {GameServerSocket} from "@/lib/client/GameServerSocket";
 
 export type SocketServerSide = Socket<ClientToServerEvents, ServerToClientEvents>
 
@@ -37,12 +35,6 @@ export default function handler(
 
             // Initialize Game Server Socket
             gameServer.socket.socketServer = socket;
-
-            socket.on("sendBoard", (shipsSerialized, res) => {
-                GameServerLogger.onSendFleet(socket.id);
-                res(GameServerSocket.onSendFleet(shipsSerialized, socket.id).serialize());
-                console.log("foeeffieoohe");
-            });
         });
 
         res.socket.server.io = io;
