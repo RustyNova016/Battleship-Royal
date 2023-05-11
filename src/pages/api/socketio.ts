@@ -28,6 +28,8 @@ export default function handler(
                     // Whether to skip middlewares upon successful recovery
                     skipMiddlewares: false,
                 },
+                path: "/api/socket_io",
+                addTrailingSlash: false
             }
         );
         console.log(`[Socket] > Initialized at ${io.path()}`);

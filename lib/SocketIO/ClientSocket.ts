@@ -6,5 +6,6 @@ const URL = process.env.NODE_ENV === "production" ? undefined : "http://localhos
 
 console.log("Connecting websocket to:", URL);
 export const clientSocket: SocketClientSide = io(URL, {
-    autoConnect: true
+    autoConnect: true,
+    path: "/api/socket_io"
 });
