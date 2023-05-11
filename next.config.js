@@ -1,5 +1,5 @@
 const {join} = require("path");
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
 
@@ -8,23 +8,18 @@ const nextConfig = {
     },
 
     devIndicators: {
-
-        buildActivityPosition: 'bottom-right',
+        buildActivityPosition: "bottom-right",
         buildActivity: true,
-    },
-
-    sassOptions: {
-        includePaths: [join(__dirname, 'styles')],
     },
 
     images: {
         remotePatterns: [
             {
-                protocol: 'https',
-                hostname: 'avatars.githubusercontent.com',
+                protocol: "https",
+                hostname: "avatars.githubusercontent.com",
             },
         ],
     },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
